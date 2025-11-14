@@ -1,10 +1,11 @@
 package com.haui.bookinghotel.service;
 
 import com.haui.bookinghotel.domain.User;
-import com.haui.bookinghotel.domain.dto.Meta;
-import com.haui.bookinghotel.domain.dto.ResUserDTO;
-import com.haui.bookinghotel.domain.dto.ResultPaginationDTO;
+import com.haui.bookinghotel.domain.response.Meta;
+import com.haui.bookinghotel.domain.response.ResUserDTO;
+import com.haui.bookinghotel.domain.response.ResultPaginationDTO;
 import com.haui.bookinghotel.repository.UserRepository;
+import com.haui.bookinghotel.util.constant.Role;
 import com.turkraft.springfilter.boot.Filter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,7 +39,8 @@ public class UserService {
                                     item.getId(),
                                     item.getUsername(),
                                     item.getEmail(),
-                                    item.getPhoneNumber()
+                                    item.getPhoneNumber(),
+                                    item.getRole()
                             ))
                             .toList();
         res.setResult(users);
@@ -50,6 +52,7 @@ public class UserService {
     }
 
     public User handleCreateUser(User user){
+        user.setRole(Role.USER);
         return this.userRepository.save(user);
     }
 
@@ -72,5 +75,20 @@ public class UserService {
 
     public User handleFindUserByUsername(String username){
         return this.userRepository.findByEmail(username);
+    }
+
+    public boolean isEmailExist(String email){
+        return this.userRepository.existsByEmail(email);
+    }
+
+    public ResUserDTO convertToResUserDTO(User user){
+        ResUserDTO res = new ResUserDTO();
+        res.setId(user.getId());
+        res.setEmail(user.getEmail());
+        res.setUserName(user.getUsername());
+        res.setPhoneNumber(user.getPhoneNumber());
+        res.setRole(user.getRole());
+
+        return res;
     }
 }

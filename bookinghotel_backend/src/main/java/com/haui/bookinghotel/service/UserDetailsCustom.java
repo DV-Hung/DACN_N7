@@ -1,6 +1,7 @@
 package com.haui.bookinghotel.service;
 
 
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,6 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
+import java.util.List;
 
 @Component("userDetailsService")
 public class UserDetailsCustom implements UserDetailsService {
@@ -25,10 +27,18 @@ public class UserDetailsCustom implements UserDetailsService {
         if(user == null){
             throw new UsernameNotFoundException("Username/password k hop le");
         }
+        if (user.getRole() == null) {
+            throw new UsernameNotFoundException("User khong co quyen");
+        }
+        String roleName = user.getRole().name();
+
+        List<GrantedAuthority> authorities = Collections.singletonList(
+                new SimpleGrantedAuthority( roleName.toUpperCase()) // Thêm "ROLE_" và "UPPERCASE"
+        );
         return new User(
                 user.getEmail(),
                 user.getPassword(),
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
+                authorities
         );
     }
 }

@@ -2,8 +2,9 @@ package com.haui.bookinghotel.controller;
 
 
 import com.haui.bookinghotel.domain.User;
-import com.haui.bookinghotel.domain.dto.ResultPaginationDTO;
+import com.haui.bookinghotel.domain.response.ResultPaginationDTO;
 import com.haui.bookinghotel.service.UserService;
+import com.haui.bookinghotel.util.annotation.ApiMessage;
 import com.turkraft.springfilter.boot.Filter;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
@@ -12,9 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -26,23 +24,25 @@ public class UserController {
         this.passwordEncoder = passwordEncoder;
     }
 
-
     @GetMapping("/users")
+    @ApiMessage("fetch all users")
     public ResponseEntity<ResultPaginationDTO> getAllUsers(
             @Filter Specification<User> spec,
-            Pageable pageable
-            ){
+            Pageable pageable)
+    {
         ResultPaginationDTO users = this.userService.handleFetchAllUsers(spec, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 
     @GetMapping("/users/{id}")
+    @ApiMessage("fetch a user by id")
     public ResponseEntity<User> getUserById(@PathVariable Long id){
         User user=  this.userService.handleFetchUserById(id);
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
     @PostMapping("/users")
+    @ApiMessage("create a user")
     public ResponseEntity<User> createNewUser( @Valid @RequestBody User user){
         String hashPassword = this.passwordEncoder.encode(user.getPassword());
         user.setPassword(hashPassword);
@@ -51,11 +51,13 @@ public class UserController {
     }
 
     @PutMapping("/users")
+    @ApiMessage("update user")
     public ResponseEntity<User> updateUser( @RequestBody User user){
         User newUser = this.userService.handleUpdateUser(user);
         return ResponseEntity.status(HttpStatus.OK).body(newUser);
     }
     @DeleteMapping("/users/{id}")
+    @ApiMessage("delete user")
     public ResponseEntity<User> deleteUser(@PathVariable Long id){
         this.userService.handleDeleteUser(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);

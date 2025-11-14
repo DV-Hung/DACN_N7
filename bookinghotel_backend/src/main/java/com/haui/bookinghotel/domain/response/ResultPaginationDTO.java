@@ -1,4 +1,4 @@
-package com.haui.bookinghotel.domain.dto;
+package com.haui.bookinghotel.domain.response;
 
 import lombok.Getter;
 import lombok.Setter;

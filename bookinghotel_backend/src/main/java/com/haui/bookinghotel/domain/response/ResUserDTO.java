@@ -1,5 +1,6 @@
-package com.haui.bookinghotel.domain.dto;
+package com.haui.bookinghotel.domain.response;
 
+import com.haui.bookinghotel.util.constant.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,4 +15,5 @@ public class ResUserDTO {
     private String userName;
     private String email;
     private String phoneNumber;
+    private Role role;
 }
