@@ -1,6 +1,7 @@
-package com.haui.bookinghotel.service;
+package com.haui.bookinghotel.config;
 
 
+import com.haui.bookinghotel.service.UserService;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
