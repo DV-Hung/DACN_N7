@@ -21,6 +21,10 @@ public class HotelService {
         this.hotelRepository = hotelRepository;
     }
 
+    public boolean isIdExist(Long id){
+        return hotelRepository.existsById(id);
+    }
+
     public ResultPaginationDTO handleFetchAllHotels(@Filter Specification<Hotel> spec, Pageable pageable) {
         Page<Hotel> pageHotel = this.hotelRepository.findAll(spec, pageable);
         ResultPaginationDTO res = new ResultPaginationDTO();

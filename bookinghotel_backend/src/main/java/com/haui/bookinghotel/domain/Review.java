@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 public class Review {
     @EmbeddedId
-    private ReviewId id;
+    private ReviewId id = new ReviewId();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("userId")

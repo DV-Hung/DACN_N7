@@ -16,16 +16,16 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewId implements Serializable {
-    @Column(name ="user_id")
+
     private Long userId;
 
-    @Column(name = "hotel_id")
     private Long hotelId;
 
     @Override
     public boolean equals (Object o) {
         if(this == o) return true;
-        if(o == null || getClass() != o.getClass()) return false;
+        if(o == null) return false;
+        if(getClass() != o.getClass()) return false;
         ReviewId reviewId = (ReviewId) o;
         return Objects.equals(userId, reviewId.userId) &&
                 Objects.equals(hotelId, reviewId.hotelId);

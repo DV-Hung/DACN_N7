@@ -26,6 +26,8 @@ public class User {
     @NotBlank(message = "Password khong duoc de trong")
     private String password;
     private String phoneNumber;
+    @Column(columnDefinition = "MEDIUMTEXT")
+    private String refreshToken;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss a", timezone = "GMT+7")
     private Instant createdAt;
 

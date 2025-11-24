@@ -1,4 +1,4 @@
-package com.haui.bookinghotel.domain.response;
+package com.haui.bookinghotel.domain.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

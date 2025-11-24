@@ -2,11 +2,10 @@ package com.haui.bookinghotel.service;
 
 import com.haui.bookinghotel.domain.User;
 import com.haui.bookinghotel.domain.response.Meta;
-import com.haui.bookinghotel.domain.response.ResUserDTO;
+import com.haui.bookinghotel.domain.response.user.ResUserDTO;
 import com.haui.bookinghotel.domain.response.ResultPaginationDTO;
 import com.haui.bookinghotel.repository.UserRepository;
 import com.haui.bookinghotel.util.constant.Role;
-import com.turkraft.springfilter.boot.Filter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -23,7 +22,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public ResultPaginationDTO handleFetchAllUsers(@Filter Specification<User> spec, Pageable pageable){
+    public ResultPaginationDTO handleFetchAllUsers(Specification<User> spec, Pageable pageable){
         Page<User> pageUser = this.userRepository.findAll(spec,pageable);
         ResultPaginationDTO res = new ResultPaginationDTO();
         Meta meta= new Meta();
@@ -35,13 +34,7 @@ public class UserService {
         res.setMeta(meta);
 
         List<ResUserDTO> users = pageUser.getContent().stream()
-                            .map(item -> new ResUserDTO(
-                                    item.getId(),
-                                    item.getUsername(),
-                                    item.getEmail(),
-                                    item.getPhoneNumber(),
-                                    item.getRole()
-                            ))
+                            .map(item -> this.convertToResUserDTO(item))
                             .toList();
         res.setResult(users);
         return res;
@@ -81,14 +74,28 @@ public class UserService {
         return this.userRepository.existsByEmail(email);
     }
 
+    public boolean isIdExist(Long id){
+        return this.userRepository.existsById(id);
+    }
+
     public ResUserDTO convertToResUserDTO(User user){
         ResUserDTO res = new ResUserDTO();
         res.setId(user.getId());
         res.setEmail(user.getEmail());
         res.setUserName(user.getUsername());
         res.setPhoneNumber(user.getPhoneNumber());
+        res.setCreateAt(user.getCreatedAt());
         res.setRole(user.getRole());
-
         return res;
     }
+    public void updateUserToken(String refreshToken, String email)
+    {
+        User user = this.userRepository.findByEmail(email);
+        if(user!= null){
+            user.setRefreshToken(refreshToken);
+            this.userRepository.save(user);
+        }
+    }
+
+
 }

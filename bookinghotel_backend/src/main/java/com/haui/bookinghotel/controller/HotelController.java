@@ -4,12 +4,14 @@ import com.haui.bookinghotel.domain.Hotel;
 import com.haui.bookinghotel.domain.response.ResultPaginationDTO;
 import com.haui.bookinghotel.service.HotelService;
 import com.haui.bookinghotel.util.annotation.ApiMessage;
+import com.haui.bookinghotel.util.error.IdInvalidException;
 import com.turkraft.springfilter.boot.Filter;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,13 +34,18 @@ public class HotelController {
 
     @GetMapping("/hotels/{id}")
     @ApiMessage("fetch a hotel by id")
-    public ResponseEntity<Hotel> getHotelById(@PathVariable Long id) {
+    public ResponseEntity<Hotel> getHotelById(@PathVariable Long id) throws IdInvalidException {
+        boolean isValidId = this.hotelService.isIdExist(id);
+        if (!isValidId) {
+            throw new IdInvalidException("Hotel is not exist");
+        }
         Hotel hotel = this.hotelService.handleFetchHotelById(id);
         return ResponseEntity.status(HttpStatus.OK).body(hotel);
     }
 
     @PostMapping("/hotels")
     @ApiMessage("create a hotel")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Hotel> createNewHotel(@Valid @RequestBody Hotel hotel) {
         Hotel newHotel = this.hotelService.handleCreateHotel(hotel);
         return ResponseEntity.status(HttpStatus.CREATED).body(newHotel);
@@ -46,14 +53,24 @@ public class HotelController {
 
     @PutMapping("/hotels")
     @ApiMessage("update hotel")
-    public ResponseEntity<Hotel> updateHotel(@RequestBody Hotel hotel) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Hotel> updateHotel(@RequestBody Hotel hotel) throws IdInvalidException {
+        boolean isValidId = this.hotelService.isIdExist(hotel.getId());
+        if (!isValidId) {
+            throw new IdInvalidException("Hotel is not exist");
+        }
         Hotel newHotel = this.hotelService.handleUpdateHotel(hotel);
         return ResponseEntity.status(HttpStatus.OK).body(newHotel);
     }
 
     @DeleteMapping("/hotels/{id}")
     @ApiMessage("delete hotel")
-    public ResponseEntity<Hotel> deleteHotel(@PathVariable Long id) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Hotel> deleteHotel(@PathVariable Long id) throws IdInvalidException {
+        boolean isValidId = this.hotelService.isIdExist(id);
+        if (!isValidId) {
+            throw new IdInvalidException("Hotel is not exist");
+        }
         this.hotelService.handleDeleteHotel(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }

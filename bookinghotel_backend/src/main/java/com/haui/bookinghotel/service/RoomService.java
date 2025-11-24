@@ -1,6 +1,8 @@
 package com.haui.bookinghotel.service;
 
+import com.haui.bookinghotel.domain.Hotel;
 import com.haui.bookinghotel.domain.Room;
+import com.haui.bookinghotel.domain.request.RoomRequest;
 import com.haui.bookinghotel.domain.response.Meta;
 import com.haui.bookinghotel.domain.response.ResultPaginationDTO;
 import com.haui.bookinghotel.repository.RoomRepository;
@@ -18,6 +20,10 @@ public class RoomService {
 
     public RoomService(RoomRepository roomRepository) {
         this.roomRepository = roomRepository;
+    }
+
+    public boolean isIdExist(Long id){
+        return roomRepository.existsById(id);
     }
 
     public ResultPaginationDTO handleFetchAllRooms(@Filter Specification<Room> spec, Pageable pageable) {
@@ -39,7 +45,16 @@ public class RoomService {
         return room.orElse(null);
     }
 
-    public Room handleCreateRoom(Room room) {
+    public Room handleCreateRoom(RoomRequest reqRoom, Hotel hotel) {
+        Room room = new Room();
+        room.setRoomType(reqRoom.getRoomType());
+        room.setRoomImage(reqRoom.getRoomImage());
+        room.setCapacity(reqRoom.getCapacity());
+        room.setArea(reqRoom.getArea());
+        room.setUtilities(reqRoom.getUtilities());
+        room.setPrice(reqRoom.getPrice());
+        room.setAvailable(reqRoom.getAvailable());
+        room.setHotel(hotel);
         return this.roomRepository.save(room);
     }
 

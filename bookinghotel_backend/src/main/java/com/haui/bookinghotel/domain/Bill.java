@@ -1,6 +1,7 @@
 package com.haui.bookinghotel.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,6 +18,7 @@ public class Bill {
     private String username;
     private Instant checkInDate;
     private Instant checkOutDate;
+    @Min(value = 0, message = "Total cost must be positive")
     private double totalCost;
     private String email;
     private String phoneNumber;

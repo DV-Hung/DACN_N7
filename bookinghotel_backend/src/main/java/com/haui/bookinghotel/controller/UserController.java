@@ -38,10 +38,6 @@ public class UserController {
             Pageable pageable)
     {
         ResultPaginationDTO users = this.userService.handleFetchAllUsers(spec, pageable);
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        log.info("Username " + auth.getName());
-        auth.getAuthorities().forEach(gA -> log.info(gA.getAuthority()));
-
         return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 
