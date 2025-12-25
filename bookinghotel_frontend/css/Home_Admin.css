@@ -1,0 +1,251 @@
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+th,
+td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #2196f3;
+    /* Màu xanh dương đẹp cho header */
+    color: white;
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+    background-color: #ffffff;
+    /* Màu xanh nhạt cho hàng chẵn */
+}
+
+tr:nth-child(odd) {
+    background-color: #ffffff;
+    /* Màu trắng cho hàng lẻ */
+}
+
+tr:hover {
+    background-color: #bbdefb;
+    /* Hiệu ứng hover */
+}
+
+.action-btn {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.action-btn:hover {
+    background-color: #d32f2f;
+}
+
+
+body {
+    font-family: Arial, sans-serif;
+
+    max-height: 100%;
+}
+
+.orders-table-wrapper {
+    max-height: calc(6 * 60px + 1px);
+    /* tối đa 6 dòng */
+    overflow-y: auto;
+    /* bật scroll khi vượt quá 6 dòng */
+    border: 1px solid #ccc;
+}
+
+.orders-table-wrapper table {
+    width: 100%;
+    height: 100%;
+    border-collapse: collapse;
+}
+
+.orders-table-wrapper th,
+.orders-table-wrapper td {
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: left;
+}
+
+.orders-table-wrapper th {
+    position: sticky;
+    top: 0;
+    background-color: #2196f3;
+    color: white;
+    z-index: 2;
+}
+
+.table-container {
+    max-height: calc(5 * 60px + 1px);
+    /* 6 dòng * chiều cao mỗi dòng 50px + border */
+    overflow-y: auto;
+    /* bật scroll khi vượt quá 6 dòng */
+    border: 1px solid #ccc;
+}
+
+.table-container table {
+    height: 100%;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-container th,
+.table-container td {
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+.table-container th {
+    position: sticky;
+    top: 0;
+    background-color: #2196f3;
+    color: white;
+    z-index: 2;
+}
+
+.sidebar {
+    height: 100vh;
+    background-color: #343a40;
+    color: #fff;
+    position: fixed;
+    width: 250px;
+    overflow-y: auto;
+    /* Kích hoạt thanh cuộn dọc */
+    transition: width 0.3s;
+    /* Hiệu ứng chuyển đổi khi ẩn/hiện */
+}
+
+.sidebar.collapsed {
+    width: 0;
+    overflow: hidden;
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 8px;
+    /* Độ rộng của thanh cuộn */
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background-color: #495057;
+    /* Màu của thanh cuộn */
+    border-radius: 4px;
+}
+
+.sidebar a,
+.sidebar h2 {
+    color: #fff;
+    text-decoration: none;
+}
+
+.sidebar a:hover {
+    background-color: #495057;
+}
+
+.sidebar .submenu {
+    list-style: none;
+    padding-left: 20px;
+    display: none;
+}
+
+.sidebar .submenu .nav-link {
+    font-size: 14px;
+    padding: 5px 20px;
+    color: #adb5bd;
+}
+
+.sidebar .submenu .nav-link:hover {
+    background-color: #495057;
+}
+
+.sidebar .badge-info {
+    background-color: #17a2b8;
+}
+
+.sidebar .badge-danger {
+    background-color: #dc3545;
+}
+
+.nav-item .nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.content {
+    margin-left: 250px;
+    padding: 20px;
+    transition: margin-left 0.3s;
+    /* Hiệu ứng chuyển đổi khi ẩn/hiện */
+    overflow-y: auto;
+    /* Kích hoạt thanh cuộn dọc */
+    height: 700px;
+}
+
+.content.collapsed {
+    margin-left: 0;
+}
+
+.content::-webkit-scrollbar {
+    width: 8px;
+    /* Độ rộng của thanh cuộn */
+}
+
+.content::-webkit-scrollbar-thumb {
+    background-color: #495057;
+    /* Màu của thanh cuộn */
+    border-radius: 4px;
+}
+
+.footer {
+    text-align: center;
+    padding: 20px;
+    color: #999;
+}
+body2 {
+    background-color: #f8f9fa;
+    font-family: Arial, sans-serif;
+}
+
+.widget-box {
+    margin-top: 0%;
+    padding: 15px;
+    border-radius: 10px;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.widget-box .icon {
+    font-size: 2.5rem;
+    opacity: 0.8;
+}
+
+.bg-primary-custom {
+    background-color: #41a413;
+}
+
+.bg-green {
+    background-color: #db4e12;
+}
+
+.bg-yellow {
+    background-color: #354ae8;
+}
+
+.bg-red {
+    background-color: #6517db;
+}

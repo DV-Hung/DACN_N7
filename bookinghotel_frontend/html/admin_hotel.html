@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin AncientBooking</title>
+  <link rel="stylesheet" href="/css/Admin_KSan.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+  <link rel="stylesheet" href="/css/Admin_KSan.css" />
+  <script src="/js/utils.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+</head>
+
+<body>
+  <div class="sidebar">
+    <h2 class="text-center mb-4" style="font-size: 35px">
+      Admin <br />AncientBooking
+    </h2>
+    <img src="/image/1admin.png" alt="Profile" class="rounded-circle mx-auto d-block mb-4" width="100" />
+    <p class="text-center">AncientBooking</p>
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link" href="admin_hotel.html" onclick="logout()" style="font-size: 95%">
+          <i class="fas fa-hotel"></i>Quản lý khách sạn<i class="fas fa-chevron-down-o"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="login.html" onclick="logout()" style="font-size: 95%">
+          <i class="fas fa-sign-out-alt"></i>Đăng xuất<i class="fas fa-chevron-down-o"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <div class="content">
+    <nav class="navbar navbar-expand navbar-light bg-light">
+      <button id="sidebarToggle" class="btn btn-outline-secondary mr-2" title="Toggle Sidebar">
+        <i class="fas fa-bars"></i>
+      </button>
+      <a class="navbar-brand" href="admin.html">Home</a>
+      <a class="navbar-brand" href="home.html">Website</a>
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="#"><i class="fas fa-comments"></i><span class="badge badge-danger">3</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"><i class="fas fa-bell"></i><span class="badge badge-warning">15</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"><i class="fas fa-th-large"></i></a>
+        </li>
+      </ul>
+    </nav>
+    <body2>
+      <h2>Danh sách khách sạn</h2>
+      <div class="top-bar">
+        <button class="add-btn" onclick="openModal()">
+          <i class="fas fa-plus"></i> Thêm khách sạn
+        </button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Mã khách sạn</th>
+            <th>Tên khách sạn</th>
+            <th>Hình ảnh</th>
+            <th>Điểm TB</th>
+            <th>Địa chỉ</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody id="hotelTable">
+          <!-- Dữ liệu sẽ load từ backend -->
+        </tbody>
+      </table>
+      <div id="hotelPagination" style="display:flex;gap:8px;align-items:center;justify-content:center;margin-top:15px">
+      </div>
+
+      <!-- Modal Thêm/Sửa khách sạn -->
+      <div class="modal" id="addModal">
+        <div class="modal-content">
+          <button class="close-btn" onclick="closeModal()">&times;</button>
+          <h3 id="modalTitle">Thêm khách sạn</h3>
+
+          <div class="form-row">
+            <input type="text" placeholder="Nhập tên khách sạn" id="tenKS" />
+            <input type="text" placeholder="Nhập tiện ích" id="tienIch" />
+          </div>
+          <div class="form-row">
+            <input type="text" placeholder="Nhập địa chỉ" id="diaChi" />
+          </div>
+          <div class="form-row">
+            <textarea placeholder="Nhập giới thiệu về khách sạn" id="gioiThieu"
+              style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-family: Arial, sans-serif; min-height: 120px;"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Thêm hình ảnh:</label>
+            <div>
+              <input type="file" id="hinhAnh" multiple accept="image/*" />
+              <div class="preview" id="preview"></div>
+            </div>
+          </div>
+          <!-- Hidden input to store the upload folder name -->
+          <input type="hidden" id="uploadFolder" value="khachsan" />
+
+          <button class="btn-submit" id="submitBtn" onclick="handleSubmit()">
+            Thêm
+          </button>
+        </div>
+      </div>
+
+      <script>
+        const apiUrl = "http://localhost:8080/api/v1/hotels";
+
+        const storageBase = "http://localhost:8080/storage";
+
+        let imageUrls = [];
+        let isEditMode = false;
+        let editHotelData = null;
+
+        let currentHotelPage = 1;
+        let hotelPageSize = 20;
+
+        async function loadKhachSan(page = 1, pageSize = hotelPageSize) {
+          try {
+            currentHotelPage = page;
+            hotelPageSize = pageSize;
+
+            // Convert to 0-based page for backend (Spring Data uses 0-based pagination)
+            const backendPage = page - 1;
+            const res = await apiCall(`${apiUrl}?page=${backendPage}&size=${pageSize}`);
+            if (!res) return;
+
+            const result = await res.json();
+            // Lấy meta từ result (đã parse JSON) không phải từ res
+            const meta = result.data?.meta || { page: 1, pageSize: pageSize, pages: 1, total: 0 };
+
+            const hotels = result.data?.result || [];
+
+            const table = document.getElementById("hotelTable");
+            table.innerHTML = "";
+
+            for (const ks of hotels) {
+              const row = table.insertRow();
+
+              let imgHtml = "";
+              let folderForDisplay = "khachsan"; // default folder
+              if (ks.image) {
+                let filename = ks.image;
+                // extract filename and folder from various formats (e.g., "/storage/khachsan/123-file.jpg" or "123-file.jpg")
+                if (filename.includes("/")) {
+                  const parts = filename.split("/");
+                  // if path includes storage prefix, extract folder and filename
+                  if (parts.includes("storage")) {
+                    const storageIdx = parts.indexOf("storage");
+                    if (storageIdx < parts.length - 2) {
+                      folderForDisplay = parts[storageIdx + 1];
+                      filename = parts[parts.length - 1];
+                    }
+                  } else {
+                    filename = parts[parts.length - 1];
+                  }
+                }
+                // always build full HTTP URL for display
+                const imgSrc = `${storageBase}/${folderForDisplay}/${filename}`;
+                imgHtml = `<img src="${imgSrc}" alt="${ks.name}" />`;
+              }
+
+              row.innerHTML = `
+                <td>${ks.id}</td>
+                <td>${ks.name || ''}</td>
+                <td>${imgHtml}</td>
+                <td>${(ks.rate || 0).toFixed(1)}</td>
+                <td>${ks.address || ''}</td>
+                <td class="action-btn">
+                  <button class="edit-btn"><i class="fas fa-edit"></i> Sửa</button>
+                  <button class="delete-btn"><i class="fas fa-trash"></i> Xóa</button>
+                  <button class="CPhong-btn" style="background-color: #17a2b8"><i class="fas fa-bed"></i> Các phòng</button>
+                </td>
+              `;
+
+              const editBtn = row.querySelector(".edit-btn");
+              editBtn.addEventListener("click", () => editHotel(ks));
+
+              const deleteBtn = row.querySelector(".delete-btn");
+              deleteBtn.addEventListener("click", () =>
+                deleteHotelAndRooms(ks.id, ks.name)
+              );
+
+              const roomBtn = row.querySelector(".CPhong-btn");
+              roomBtn.addEventListener("click", () =>
+                openRoomPage(ks.id)
+              );
+            }
+            // 3. Gọi hàm vẽ phân trang (giống Home_Admin)
+            renderHotelPagination(meta);
+
+          } catch (err) {
+            console.error("Lỗi load khách sạn:", err);
+            alert("Không thể tải danh sách khách sạn. Vui lòng kiểm tra console log.");
+          }
+        }
+
+        // 4. Hàm wrapper để gọi renderPagination từ utils.js
+        function renderHotelPagination(meta) {
+          // 'hotelPagination' là ID của thẻ div vừa thêm ở Bước 1
+          // loadKhachSan là hàm callback khi người dùng bấm chuyển trang
+          if (typeof renderPagination === 'function') {
+            renderPagination('hotelPagination', meta, loadKhachSan);
+          } else {
+            console.warn("Hàm renderPagination chưa được load từ utils.js");
+          }
+        }
+
+        function openModal() {
+          imageUrls = [];
+          isEditMode = false;
+          editHotelData = null;
+
+          document.getElementById("addModal").style.display = "flex";
+          document.getElementById("modalTitle").textContent = "Thêm khách sạn";
+          document.getElementById("submitBtn").textContent = "Thêm";
+
+          // Đảm bảo các trường đều trống khi thêm mới
+          document.getElementById("tenKS").value = "";
+          document.getElementById("diaChi").value = "";
+          document.getElementById("gioiThieu").value = "";
+          document.getElementById("tienIch").value = "";
+          document.getElementById("hinhAnh").value = "";
+          document.getElementById("preview").innerHTML = "";
+          document.getElementById("uploadFolder").value = "khachsan";
+          imageUrls = [];
+          // Nếu có các trường khác, cũng reset về trống
+        }
+
+        function closeModal() {
+          document.getElementById("addModal").style.display = "none";
+          document.getElementById("preview").innerHTML = "";
+          document.getElementById("hinhAnh").value = "";
+          imageUrls = [];
+        }
+
+        // --- Upload hình ảnh ---
+        document.getElementById("hinhAnh").addEventListener(
+          "change",
+          async function (event) {
+            const preview = document.getElementById("preview");
+            preview.innerHTML = "";
+            imageUrls = [];
+
+            // use backend upload endpoint on localhost:8080 (backend runs on this port)
+            const uploadEndpoint = "http://localhost:8080/api/v1/files";
+            // get folder name from hidden input (user can set this when creating/editing)
+            const folderName = document.getElementById("uploadFolder").value || "khachsan";
+
+            // LẤY TOKEN
+            const token = localStorage.getItem("access_token");
+
+            const files = Array.from(event.target.files || []);
+            for (const file of files) {
+              try {
+                const form = new FormData();
+                form.append("file", file);
+                form.append("folder", folderName);
+
+                // THÊM HEADER AUTHORIZATION
+                const headers = {};
+                if (token) {
+                  headers["Authorization"] = `Bearer ${token}`;
+                }
+                const resp = await fetch(uploadEndpoint, {
+                  method: "POST",
+                  headers: headers,
+                  body: form,
+                });
+
+                if (!resp.ok) {
+                  console.error("Upload failed:", resp.statusText);
+                  alert("Không thể upload ảnh. Xin thử lại.");
+                  continue;
+                }
+
+                const data = await resp.json();
+                // backend returns fileName (final file name)
+                const fileName = data.data?.fileName || "";
+
+                // build full preview URL using storageBase so browser fetches via HTTP
+                const publicUrl = `${storageBase}/${folderName}/${fileName}`;
+
+                const img = document.createElement("img");
+                img.src = publicUrl;
+                img.alt = fileName;
+                preview.appendChild(img);
+
+                // store the filename (so khachSan.hinhAnh will be the filename)
+                imageUrls.push(fileName);
+              } catch (e) {
+                console.error("Error uploading file", e);
+                alert("Lỗi khi upload ảnh. Kiểm tra console để biết chi tiết.");
+              }
+            }
+          }
+        );
+
+        function editHotel(ks) {
+          isEditMode = true;
+          editHotelData = ks;
+
+          document.getElementById("addModal").style.display = "flex";
+          document.getElementById("modalTitle").textContent = "Sửa khách sạn";
+          document.getElementById("submitBtn").textContent = "Lưu";
+          document.getElementById("tenKS").value = ks.name || "";
+          document.getElementById("diaChi").value = ks.address || "";
+          document.getElementById("gioiThieu").value = ks.introduction || "";
+          document.getElementById("tienIch").value = ks.utilities || "";
+          document.getElementById("hinhAnh").value = "";
+
+          let filename = ks.image || "";
+          let folderName = "khachsan";
+          if (filename) {
+            if (filename.includes("/")) {
+              const parts = filename.split("/");
+              // if path includes storage prefix, extract folder and filename
+              if (parts.includes("storage")) {
+                const storageIdx = parts.indexOf("storage");
+                if (storageIdx < parts.length - 2) {
+                  folderName = parts[storageIdx + 1];
+                  filename = parts[parts.length - 1];
+                }
+              } else {
+                filename = parts[parts.length - 1];
+              }
+            }
+
+            // always build full HTTP URL for preview display
+            const previewSrc = `${storageBase}/${folderName}/${filename}`;
+            document.getElementById("preview").innerHTML = `<img src="${previewSrc}" alt="${ks.tenKhachSan}" />`;
+            imageUrls = [filename];
+          } else {
+            document.getElementById("preview").innerHTML = "";
+            imageUrls = [];
+          }
+
+          // set the folder name for new uploads during edit
+          document.getElementById("uploadFolder").value = folderName;
+        }
+
+        async function handleSubmit() {
+          const ten = document.getElementById("tenKS").value.trim();
+          const diaChi = document.getElementById("diaChi").value.trim();
+          const tienIch = document.getElementById("tienIch").value.trim();
+          const gioiThieu = document.getElementById("gioiThieu").value.trim();
+          const hinhAnhStr = imageUrls[0] || "";
+          if (!ten || !diaChi) {
+            alert("Vui lòng nhập đầy đủ tên khách sạn và địa chỉ!");
+            return;
+          }
+
+          const khachSanObj = {
+            name: ten,
+            address: diaChi,
+            utilities: tienIch,
+            introduction: gioiThieu,
+            image: hinhAnhStr,
+            rate: 0,
+          };
+
+          try {
+            if (isEditMode && editHotelData) {
+              khachSanObj.id = editHotelData.id;
+              await apiCall(`${apiUrl}`, {
+                method: "PUT",
+                body: JSON.stringify(khachSanObj)
+              });
+              alert("Đã cập nhật khách sạn: " + ten);
+            } else {
+              await apiCall(apiUrl, {
+                method: "POST",
+                body: JSON.stringify(khachSanObj),
+              });
+              alert("Đã thêm khách sạn: " + ten);
+            }
+            closeModal();
+            loadKhachSan();
+          } catch (err) {
+            console.error("Lỗi thêm/cập nhật khách sạn:", err);
+          }
+        }
+
+        async function deleteHotelAndRooms(maKS, ten) {
+          if (
+            !confirm(
+              `Bạn có chắc muốn xóa khách sạn '${ten}' và tất cả các phòng của nó không?`
+            )
+          )
+            return;
+
+          try {
+            const res = await apiCall(`${apiUrl}/${maKS}`, { method: "DELETE" });
+            if (!res) {
+              alert("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại!");
+              return;
+            }
+
+            if (res.status === 204) {
+              alert("Đã xóa khách sạn thành công!");
+              loadKhachSan();
+            } else {
+              const result = await res.json();
+              const errorMsg = result.message || "Không thể xóa khách sạn. Vui lòng thử lại!";
+              alert(errorMsg);
+            }
+          } catch (err) {
+            console.error("Lỗi xóa khách sạn và phòng:", err);
+            alert("Lỗi kết nối: " + err.message);
+          }
+        }
+
+        function openRoomPage(maKS) {
+          sessionStorage.setItem("selectedHotelId", maKS);
+          window.location.href = "admin_room.html";
+        }
+
+        window.onclick = function (e) {
+          const modal = document.getElementById("addModal");
+          if (e.target === modal) closeModal();
+        };
+
+        window.addEventListener('load', () => loadKhachSan());
+      </script>
+      <script>
+        // Đồng nhất hostname
+        if (window.location.hostname === "localhost") {
+          window.location.replace(
+            window.location.href.replace("localhost", "127.0.0.1")
+          );
+        }
+      </script>
+    </body2>
+
+    <div class="footer">
+      <p>Copyright © 2014-2021 AdminLTE.io. All rights reserved.</p>
+      <p>Version 3.2.0-rc</p>
+    </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

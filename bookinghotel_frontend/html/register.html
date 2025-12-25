@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ancient Booking - Đăng ký</title>
+  <link rel="stylesheet" href="/css/DangKy.css" />
+
+</head>
+
+<body>
+  <h1 class="main-title">Ancient Booking</h1>
+  <div class="register-container">
+    <h1>Đăng ký tài khoản</h1>
+    <form>
+      <input type="text" id="username" placeholder="Tên người dùng" required />
+      <input type="email" id="email" placeholder="Email" required />
+      <div class="password-container">
+        <input type="password" id="password" placeholder="Mật khẩu" required />
+        <button type="button" class="toggle-password" onclick="togglePassword('password')">
+          &#128065;
+        </button>
+      </div>
+      <div class="password-container">
+        <input type="password" id="confirm-password" placeholder="Xác nhận mật khẩu" required />
+        <button type="button" class="toggle-password" onclick="togglePassword('confirm-password')">
+          &#128065;
+        </button>
+      </div>
+      <input type="tel" id="phone" placeholder="Số điện thoại" required pattern="[0-9]{10,11}" />
+      <button type="submit">Đăng ký</button>
+      <div class="options">
+        <span>Bạn đã có tài khoản? </span><a href="login.html">Đăng nhập</a>
+      </div>
+    </form>
+  </div>
+  <script>
+    const apiUrl = "http://localhost:8080/api/v1/auth/register";
+
+    // --- Tạo mã khách hàng ---
+    function generateMaKhachHang() {
+      return "KH" + Date.now().toString().slice(-3);
+    }
+
+    // --- Lấy dữ liệu từ form ---
+    function getFormData() {
+      return {
+        tenTaiKhoan: document.getElementById("username").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        matKhau: document.getElementById("password").value,
+        confirmMatKhau: document.getElementById("confirm-password").value,
+        sdt: document.getElementById("phone").value.trim(),
+      };
+    }
+
+    // --- Validate input ---
+    function validate(data) {
+      if (!data.tenTaiKhoan || !data.email || !data.matKhau || !data.sdt) {
+        alert("Vui lòng nhập đầy đủ thông tin!");
+        return false;
+      }
+      if (data.matKhau !== data.confirmMatKhau) {
+        alert("Mật khẩu xác nhận không chính xác!");
+        return false;
+      }
+      return true;
+    }
+
+    // --- Gửi đăng ký tới backend ---
+    async function registerKhachHang() {
+      const data = getFormData();
+      if (!validate(data)) return;
+
+      const khachHangObj = {
+        username: data.tenTaiKhoan,
+        email: data.email,
+        password: data.matKhau,
+        phoneNumber: data.sdt,
+      };
+
+      try {
+        const res = await fetch(apiUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(khachHangObj),
+        });
+
+        const result = await res.json();
+        if (!res.ok) {
+          alert(result.message || "Đăng ký thất bại!");
+          return;
+        }
+
+        alert("Đăng ký thành công!");
+        window.location.href = "login.html";
+      } catch (err) {
+        console.error("Lỗi đăng ký:", err);
+        alert("Không thể kết nối đến server!");
+      }
+    }
+
+    // --- Toggle hiển thị mật khẩu ---
+    function togglePassword(fieldId) {
+      const passwordField = document.getElementById(fieldId);
+      const toggleBtn = passwordField.nextElementSibling;
+      if (passwordField.type === "password") {
+        passwordField.type = "text";
+        toggleBtn.innerHTML = "&#128064;";
+      } else {
+        passwordField.type = "password";
+        toggleBtn.innerHTML = "&#128065;";
+      }
+    }
+
+    // --- Gửi form ---
+    document
+      .querySelector("form")
+      .addEventListener("submit", function (event) {
+        event.preventDefault();
+        registerKhachHang();
+      });
+  </script>
+</body>
+
+</html>

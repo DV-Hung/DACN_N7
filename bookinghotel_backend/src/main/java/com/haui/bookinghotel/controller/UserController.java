@@ -1,0 +1,79 @@
+package com.haui.bookinghotel.controller;
+
+import com.haui.bookinghotel.domain.User;
+import com.haui.bookinghotel.domain.response.ResultPaginationDTO;
+import com.haui.bookinghotel.service.UserService;
+import com.haui.bookinghotel.util.SecurityUtil;
+import com.haui.bookinghotel.util.annotation.ApiMessage;
+import com.turkraft.springfilter.boot.Filter;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/v1")
+@Slf4j
+public class UserController {
+    private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
+
+    public UserController(UserService userService, PasswordEncoder passwordEncoder) {
+        this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @GetMapping("/users")
+    @ApiMessage("fetch all users")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ResultPaginationDTO> getAllUsers(
+            @Filter Specification<User> spec,
+            Pageable pageable) {
+        ResultPaginationDTO users = this.userService.handleFetchAllUsers(spec, pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(users);
+    }
+
+    @GetMapping("/users/{id}")
+    @ApiMessage("fetch a user by id")
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        User user = this.userService.handleFetchUserById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
+    @PostMapping("/users")
+    @ApiMessage("create a user")
+    public ResponseEntity<User> createNewUser(@Valid @RequestBody User user) {
+        String hashPassword = this.passwordEncoder.encode(user.getPassword());
+        user.setPassword(hashPassword);
+        User newUser = this.userService.handleCreateUser(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+    }
+
+    @PutMapping("/users")
+    @ApiMessage("update user")
+    public ResponseEntity<User> updateUser(@RequestBody User user) {
+        User newUser = this.userService.handleUpdateUser(user);
+        return ResponseEntity.status(HttpStatus.OK).body(newUser);
+    }
+
+    @DeleteMapping("/users/{id}")
+    @ApiMessage("delete user")
+    public ResponseEntity<User> deleteUser(@PathVariable Long id) {
+        this.userService.handleDeleteUser(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+    }
+
+    @GetMapping("/users/count")
+    public ResponseEntity<Integer> fetchQuantity() {
+        int quantity = this.userService.handleFetchQuantity();
+        return ResponseEntity.status(HttpStatus.OK).body(quantity);
+    }
+
+}

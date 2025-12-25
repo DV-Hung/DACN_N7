@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tìm chỗ nghỉ tiếp theo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="/css/Home_User.css" />
+  <!-- Thêm Font Awesome -->
+
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <div class="logo">
+        <h1 style="font-size: 30px;">AncientBooking.com</h1>
+      </div>
+      <div class="currency-contact">
+        <select>
+          <option value="usd">USD</option>
+          <option value="vnd">VND</option>
+        </select>
+        <div class="thongbao">
+          <i class="fa fa-bell"></i>
+          <!-- Biểu tượng thông báo -->
+          <a href="thongbao.html"></i>Thông báo</a>
+        </div>
+        <div class="contact">
+          <i class="fas fa-envelope"></i>
+          <!-- Biểu tượng liên hệ -->
+          <a href="z-lienhe.html">Liên hệ</a>
+        </div>
+      </div>
+      <div class="login-section">
+        <button class="main-button" onclick="toggleMenu()">
+          <i class="fa fa-user-circle"></i>
+          <p id="buttonusername">Tên người dùng</p>
+        </button>
+        <div id="dropdownMenu" class="dropdown-menu">
+          <button class="dropdown-button" onclick="viewAccountDetails()">Chi tiết tài khoản</button>
+          <button class="dropdown-button" onclick="logoutUser()">
+            Đăng xuất</button>
+        </div>
+      </div>
+    </div>
+    </div>
+    <div class="options">
+      <button onclick="location.href='https:/vietnam.travel/';"><i class="fa fa-calendar-check"
+          style="font-size: 30px;"></i> Sự kiện</button>
+      <button onclick="location.href='https:/www.vietjetair.com/vi';"><i class="fa fa-plane"
+          style="font-size: 30px;"></i> Chuyến bay</button>
+      <button onclick="location.href='https:/taxigo.vn/';"><i class="fa fa-car" style="font-size: 30px;"></i>Thuê
+        xe</button>
+      <button onclick="location.href='booked.html';"><i class="fa fa-shopping-cart" style="font-size: 30px;"></i>Quản lý
+        đặt phòng</button>
+    </div>
+  </header>
+  <script>
+    // --- Lấy thông tin user từ localStorage ---
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    // --- Hiển thị tên tài khoản ---
+    const usernameButton = document.getElementById("buttonusername");
+    if (user && user.tenTaiKhoan) {
+      usernameButton.textContent = user.tenTaiKhoan;
+    } else {
+      usernameButton.textContent = "Khách"; // nếu chưa login
+    }
+
+    // --- Toggle menu dropdown ---
+    function toggleMenu() {
+      const dropdown = document.getElementById("dropdownMenu");
+      dropdown.classList.toggle("show");
+    }
+
+    // --- Logout user ---
+    function logoutUser() {
+      localStorage.removeItem("user"); // Xóa thông tin đăng nhập
+      window.location.href = "login.html"; // Quay về trang đăng nhập
+    }
+
+    // --- Xem chi tiết tài khoản ---
+    function viewAccountDetails() {
+      if (user) {
+        alert(
+          `Tên tài khoản: ${user.tenTaiKhoan}\n` +
+          `Email: ${user.email}\n` +
+          `SĐT: ${user.sdt}\n` +
+          `Mật khẩu: ${user.matKhau}\n` +
+          `Ngày tạo: ${new Date(user.ngayTao).toLocaleString()}`
+        );
+      } else {
+        alert("Chưa đăng nhập!");
+      }
+    }
+
+
+    // --- Quay lại trang trước ---
+    function QuayLai() {
+      window.history.back();
+    }
+
+    // --- Click ngoài dropdown để đóng menu ---
+    window.onclick = function (event) {
+      const dropdown = document.getElementById("dropdownMenu");
+      const button = document.querySelector(".login-section button");
+      if (!button.contains(event.target)) {
+        dropdown.classList.remove("show");
+      }
+    };
+  </script>
+
+  <section class="search-section">
+    <div class="search-container">
+      <h2 style="margin-left: 0px;">
+        <b style="font-family:auto ; font-size: 35px;">Tìm chỗ nghỉ tiếp theo</b>
+      </h2>
+      <p>Tìm ưu đãi khách sạn, chỗ nghỉ dạng nhà và nhiều hơn nữa...</p>
+      <form class="search-form" id="searchForm">
+        <input type="text" placeholder="Nhập địa chỉ" id="searchInput" class="search-input" />
+        <input type="date" id="startDate" class="date-input" />
+        <input type="date" id="endDate" class="date-input" />
+        <div class="guest-control" id="guest-control">
+          <input type="text" placeholder="Nhập số người" class="guest-control-input" id="guestCount" />
+        </div>
+        <button type="submit" class="search-btn">Tìm</button>
+      </form>
+    </div>
+  </section>
+
+  <script>
+    document.getElementById("searchForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const diaChi = document.getElementById("searchInput").value.trim();
+      const soNguoi = document.getElementById("guestCount").value.trim();
+      const startDate = document.getElementById("startDate").value;
+      const endDate = document.getElementById("endDate").value;
+
+      if (!diaChi) return alert("Vui lòng nhập địa chỉ!");
+      if (!soNguoi || soNguoi <= 0) return alert("Vui lòng nhập số người hợp lệ!");
+      if (!startDate || !endDate) return alert("Vui lòng chọn ngày!");
+      if (new Date(startDate) > new Date(endDate)) return alert("Ngày kết thúc phải sau ngày bắt đầu!");
+
+      window.location.href = `search.html?diaChi=${encodeURIComponent(diaChi)}&soNguoi=${encodeURIComponent(soNguoi)}&startDate=${startDate}&endDate=${endDate}`;
+    });
+  </script>
+  <br>
+  <nav1>
+    <body7>
+      <h3 style="font-size: 28px;">Danh sách khách sạn hàng đầu</h3>
+      <p style="text-align: center; color: #555; margin: 10px 0 20px 0;">
+        Khám phá những khách sạn được yêu thích nhất với dịch vụ chất lượng và vị trí thuận tiện.
+      </p>
+      <br>
+      <div class="hotel-container">
+        <button class="scroll-btn scroll-left" id="btnLeft" aria-label="left">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+
+        <div class="hotel-list" id="hotelList">
+          <!-- Khách sạn sẽ được load từ backend ở đây -->
+        </div>
+
+        <button class="scroll-btn scroll-right" id="btnRight" aria-label="right">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+
+      <div id="hotelUserPagination"
+        style="display:flex;gap:8px;align-items:center;justify-content:center;margin-top:15px">
+      </div>
+      </div>
+
+      <script src="/js/utils.js"></script>
+      <script>
+        const hotelListEl = document.getElementById("hotelList");
+        const apiUrl = "http://localhost:8080/api/v1/hotels";
+        let currentPage = 1;
+        let pageSize = 20;
+
+        async function loadHotelsForUser(page = 1, pageSize_val = pageSize) {
+          try {
+            currentPage = page;
+            pageSize = pageSize_val;
+
+            // Convert to 0-based page for backend
+            const backendPage = page - 1;
+            const res = await apiCall(`${apiUrl}?page=${backendPage}&size=${pageSize_val}`);
+            if (!res) return;
+
+            const result = await res.json();
+            const hotels = result.data?.result || [];
+            const meta = result.data?.meta || { page: 1, pageSize: pageSize_val, pages: 1, total: 0 };
+
+            hotelListEl.innerHTML = "";
+
+            for (const ks of hotels) {
+              // Map to display format
+              const imgSrc = ks.image
+                ? `http://localhost:8080/storage/khachsan/${ks.image}`
+                : "/image/1admin.png";
+
+              const card = document.createElement("div");
+              card.className = "hotel-card";
+
+              card.innerHTML = `
+            <img src="${imgSrc}" alt="${ks.name}" />
+            <div class="hotel-info">
+              <b>${ks.name}</b>
+              <p>Địa chỉ: ${ks.address}</p>
+              <p>Đánh giá: ${(ks.rate || 0).toFixed(1)}/10</p>
+            </div>
+            <button onclick="window.location.href='detail.html?maKS=${ks.id}'">
+              Xem chi tiết
+            </button>
+          `;
+
+              hotelListEl.appendChild(card);
+            }
+
+            // Render pagination
+            renderHotelUserPagination(meta);
+
+          } catch (err) {
+            console.error("Lỗi load khách sạn cho user:", err);
+          }
+        }
+
+        function renderHotelUserPagination(meta) {
+          if (typeof renderPagination === 'function') {
+            renderPagination('hotelUserPagination', meta, loadHotelsForUser);
+          }
+        }
+
+        // Điều khiển scroll
+        const btnLeft = document.getElementById("btnLeft");
+        const btnRight = document.getElementById("btnRight");
+
+        if (btnLeft && btnRight) {
+          btnLeft.addEventListener("click", () =>
+            hotelListEl.scrollBy({ left: -350, behavior: "smooth" })
+          );
+          btnRight.addEventListener("click", () =>
+            hotelListEl.scrollBy({ left: 350, behavior: "smooth" })
+          );
+        }
+
+        loadHotelsForUser();
+      </script>
+
+    </body7>
+    <body1>
+      <div class="container1">
+        <!-- Promotions Section -->
+        <div class="section1">
+          <br>
+          <div class="title1" style="margin-top: -5%; font-size: 35px;">Ưu đãi</div>
+          <p class="subtext1">
+            Khuyến mãi, giảm giá và ưu đãi đặc biệt dành riêng cho bạn
+          </p>
+          <br>
+          <div class="promo1">
+            <div class="promo-text1">
+              <p><strong>Vui là chính, không cần dài</strong></p>
+              <br>
+              <p>
+                Kết năm với kỳ nghỉ ngắn. Tiết kiệm từ 15% trở lên khi đặt và lưu
+                trú đến hết 7/1/2025.
+              </p>
+            </div>
+            <img src="https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AA1psZ5W?w=628&h=372&q=60&m=6&f=jpg&u=t"
+              style="
+                width: 250px;
+                height: 250px;
+                border-radius: 8px;
+              " alt="Image" />
+            <a href="z-uudai.html" class="promo-button1">Tìm Ưu Đãi Cuối Năm</a>
+          </div>
+        </div>
+        <!-- Accommodation Types -->
+        <div class="section1">
+          <div class="title1">Tìm theo loại chỗ nghỉ</div>
+          <br>
+          <div class="category1">
+            <div class="category-item1">
+              <img
+                src="https://r-xx.bstatic.com/xdata/images/xphoto/263x210/57584488.jpeg?k=d8d4706fc72ee789d870eb6b05c0e546fd4ad85d72a3af3e30fb80ca72f0ba57&o="
+                alt="Khách sạn" />
+              <p>Khách sạn</p>
+            </div>
+            <div class="category-item1">
+              <img src="https://cdn3.ivivu.com/2014/01/SUPER-DELUXE2.jpg" style="height: 160px;" alt="Nhà nghỉ" />
+              <p>Nhà nghỉ</p>
+            </div>
+            <div class="category-item1">
+              <img
+                src="https://r-xx.bstatic.com/xdata/images/hotel/263x210/119467716.jpeg?k=f3c2c6271ab71513e044e48dfde378fcd6bb80cb893e39b9b78b33a60c0131c9&o="
+                alt="Căn hộ" />
+              <p>Căn hộ</p>
+            </div>
+            <div class="category-item1">
+              <img
+                src="https://q-xx.bstatic.com/xdata/images/xphoto/263x210/45450084.jpeg?k=f8c2954e867a1dd4b479909c49528531dcfb676d8fbc0d60f51d7b51bb32d1d9&o="
+                alt="Resort" />
+              <p>Các resort</p>
+            </div>
+            <div class="category-item1">
+              <img
+                src="https://r-xx.bstatic.com/xdata/images/hotel/263x210/100235855.jpeg?k=5b6e6cff16cfd290e953768d63ee15f633b56348238a705c45759aa3a81ba82b&o="
+                alt="Biệt thự" />
+              <p>Các biệt thự</p>
+            </div>
+          </div>
+        </div>
+        <!-- Destinations -->
+        <div class="section1">
+          <div class="title1">Lên kế hoạch dễ dàng và nhanh chóng</div>
+          <p class="subtext1" style="margin-top: 5px;">
+            Khám phá các điểm đến hàng đầu theo cách bạn thích ở Việt Nam
+          </p>
+        </div>
+      </div>
+    </body1>
+  </nav1>
+  <nav2>
+    <body2>
+      <!-- Phần bộ lọc -->
+      <div class="filters1">
+        <button onclick="filterDestinations('beach')">
+          <i class="fas fa-umbrella-beach"></i> Bãi biển
+        </button>
+        <button onclick="filterDestinations('outdoor')">
+          <i class="fas fa-biking"></i> Ngoài trời
+        </button>
+        <button onclick="filterDestinations('city')">
+          <i class="fas fa-building"></i> Thành phố
+        </button>
+        <button onclick="filterDestinations('romantic')">
+          <i class="fas fa-heart"></i> Lãng mạn
+        </button>
+        <button onclick="filterDestinations('relax')">
+          <i class="fas fa-spa"></i> Thư giãn
+        </button>
+      </div>
+
+      <!-- Phần điểm đến -->
+      <div id="destinations1" class="destinations1">
+        <!-- Nội dung sẽ được thay đổi bằng JavaScript -->
+      </div>
+  </nav2>
+  <nav3>
+    <body3>
+      <div class="section unique-places">
+        <h2 style="margin-left: 180px; text-align: left;">Lưu trú tại các chỗ nghỉ độc đáo hàng đầu</h2>
+        <p style="margin-left: 180px;">
+          Từ biệt thự, lâu đài cho đến nhà thuyền, igloo, chúng tôi đều có hết
+        </p>
+        <br>
+        <button class="prev" onclick="scrollToStart()">&#10094;</button>
+        <div class="places-wrapper">
+          <div class="places-container">
+            <div class="place-card">
+              <img
+                src="https://cf.bstatic.com/xdata/images/hotel/square600/239946673.webp?k=d4af6d47b2b73bc9e179d0433d12302101342eb891ffb7d0ac40b31d4142dcb7&o="
+                alt="Waldschenke Stendenitz" />
+              <div class="place-info">
+                <h3>Waldschenke Stendenitz</h3>
+                <p>Đức, Neuruppin</p>
+                <div class="rating">
+                  <span>9.5</span>
+                </div>
+                <p><b>Tuyệt vời</b> · 167 đánh giá</p>
+              </div>
+            </div>
+            <div class="place-card">
+              <img
+                src="https://cf.bstatic.com/xdata/images/hotel/square600/261566046.webp?k=823cbc5e59ac91784d1c262d35ba4b89082a27d1222994e08e4647c29bd1c6db&o="
+                alt="Harbor View" />
+              <div class="place-info">
+                <h3>Harbor View</h3>
+                <p>Vương Quốc Anh, Uig</p>
+                <div class="rating">
+                  <span>8.9</span>
+                </div>
+                <p><b>Tuyệt hảo</b> · 136 đánh giá</p>
+              </div>
+            </div>
+            <div class="place-card">
+              <img
+                src="https://cf.bstatic.com/xdata/images/hotel/square600/560928168.webp?k=cac66a093502c734b7316f6d1456b52e3edc31be5f1a3f173d1aa352f7e504cd&o="
+                alt="Casa rural La Marquesa - Cuenca" />
+              <div class="place-info">
+                <h3>Casa rural La Marquesa - Cuenca</h3>
+                <p>Tây Ban Nha, Valera de Abajo</p>
+                <div class="rating">
+                  <span>8.7</span>
+                </div>
+                <p><b>Tuyệt hảo</b> · 383 đánh giá</p>
+              </div>
+            </div>
+            <div class="place-card">
+              <img
+                src="https://cf.bstatic.com/xdata/images/hotel/square600/210942190.webp?k=0ad754ae6e916d21e9ec026fcf188284b6b8e6cb951561721cd416270a0af51a&o="
+                alt="Domki ROSSE niedaleko plaży" />
+              <div class="place-info">
+                <h3>Domki ROSSE niedaleko plaży</h3>
+                <p>Ba Lan, Jastrzebia Góra</p>
+                <div class="rating">
+                  <span>9.8</span>
+                </div>
+                <p><b>Xuất sắc</b> · 135 đánh giá</p>
+              </div>
+            </div>
+            <div class="place-card">
+              <img
+                src="https://cf.bstatic.com/xdata/images/hotel/square600/218529186.webp?k=497b590292b9828d1e4ad797cfe30a51d40a193bca4a28efe88ee8a9d6809dd3&o="
+                alt="Casaprisco" />
+              <div class="place-info">
+                <h3>Casaprisco</h3>
+                <p>Hà Lan, 3882 RG Putten</p>
+                <div class="rating">
+                  <span>9.5</span>
+                </div>
+                <p><b>Tuyệt vời</b> · 167 đánh giá</p>
+              </div>
+            </div>
+            <div class="place-card">
+              <img
+                src="https://cf.bstatic.com/xdata/images/hotel/square600/187855604.webp?k=0abbcd2115938850aa3372f4e7bf847f2aeb9579d674ec40ff273230a840eb9d&o="
+                alt="Tiny House Dreischwesternherz" />
+              <div class="place-info">
+                <h3>Tiny House Dreischwesternherz</h3>
+                <p>Đức, 54296 Trier</p>
+                <div class="rating">
+                  <span>9.5</span>
+                </div>
+                <p><b>Tuyệt vời</b> · 167 đánh giá</p>
+              </div>
+            </div>
+            <div class="place-card">
+              <img
+                src="https://cf.bstatic.com/xdata/images/hotel/square600/106411975.webp?k=35d701f4788b80f8c2ec0d49530942a1673c326c491e0194d1cba9ea77479057&o="
+                alt="Auberge La Seigneurie Valcartier" />
+              <div class="place-info">
+                <h3>Auberge La Seigneurie Valcartier</h3>
+                <p>Canada, G0A 4S0 Saint-Gabriel-De-Valcartier, </p>
+                <div class="rating">
+                  <span>8.0</span>
+                </div>
+                <p><b>Rất tốt</b> · 287 đánh giá</p>
+              </div>
+            </div>
+            <div class="place-card">
+              <img
+                src="https://cf.bstatic.com/xdata/images/hotel/square600/213387079.webp?k=250ff2f07bc80b2e7b55bb36202b0f555919f08f810a8ccf73cd266be265ca9f&o="
+                alt="Loft Over The Vines" />
+              <div class="place-info">
+                <h3>Loft Over The Vines</h3>
+                <p> Úc, 7025 Richmond,</p>
+                <div class="rating">
+                  <span>9.2</span>
+                </div>
+                <p><b>Tuyệt vời</b> · 47 đánh giá</p>
+              </div>
+            </div>
+            <div class="place-card">
+              <img
+                src="https://cf.bstatic.com/xdata/images/hotel/square600/109319008.webp?k=5170e41a9f38e078ccee474236146034f69df6c0ddb91f1484cb733a5ab0e028&o="
+                alt="May's Apartments by May's" />
+              <div class="place-info">
+                <h3>May's Apartments by May's</h3>
+                <p>Na Uy, 8390 Reine
+                </p>
+                <div class="rating">
+                  <span>9.4</span>
+                </div>
+                <p><b>Tuyệt vời</b> · 824 đánh giá</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="next" onclick="scrollRight()">&#10095;</button>
+      </div>
+    </body3>
+  </nav3>
+  <nav4>
+    <body4>
+      <div class="section unique-places4">
+        <h2 style="margin-top: -35px; text-align: left;">Nhà ở mà khách yêu thích</h2>
+        <button class="prev4" onclick="scrollToStart4()">&#10094;</button>
+        <div class="places-wrapper4">
+          <div class="places-container4">
+            <div class="place-card4">
+              <img
+                src="https://cf.bstatic.com/xdata/images/hotel/square600/13125860.webp?k=35b70a7e8a17a71896996cd55d84f742cd15724c3aebaed0d9b5ba19c53c430b&o="
+                alt="Aparthotel Stare Miasto" />
+              <div class="place-info4">
+                <h3>Aparthotel Stare Miasto</h3>
+                <p>Old Town, Ba Lan, Kraków</p>
+                <div class="rating4">
+                  <span>8.8</span>
+                </div>
+                <p><b>Tuyệt vời</b> · 3.038 đánh giá</p>
+                <p>Bắt đầu từ<span class="price4"> US$132</span></p>
+              </div>
+            </div>
+            <div class="place-card4">
+              <img
+                src="https://cf.bstatic.com/xdata/images/hotel/square600/579099936.webp?k=e04cc7f7fe864ce09b7d7d978dbb7db3e558038a2151eb7c4c11e895bafbd8c0&o="
+                alt="7Seasons Apartments Budapest" />
+              <div class="place-info4">
+                <h3>7Seasons Apartments Budapest</h3>
+                <p>06. Terézváros, Hungary, Budapest</p>
+                <div class="rating4">
+                  <span>8.9</span>
+                </div>
+                <p><b>Tuyệt vời</b> · 11.406 đánh giá</p>
+                <p>Bắt đầu từ<span class="price4"> US$262</span></p>
+              </div>
+            </div>
+            <div class="place-card4">
+              <img
+                src="https://cf.bstatic.com/xdata/images/hotel/square600/270323047.webp?k=bade09d7901e1282156f13c3b39e3a8b9c8d45170b2f1184565d3fc304c42d70&o=" />
+              <div class="place-info4">
+                <h3>Aparthotel Stare Miasto</h3>
+                <p>Old Town, Ba Lan, Kraków</p>
+                <div class="rating4">
+                  <span>9.2</span>
+                </div>
+                <p><b>Tuyệt hảo</b> · 1.501 đánh giá</p>
+                <p>Bắt đầu từ<span class="price4"> US$265</span></p>
+              </div>
+            </div>
+            <div class="place-card4">
+              <img
+                src="https://cf.bstatic.com/xdata/images/hotel/square600/352170812.webp?k=4ff5e29f3ad72c2c9f7170f60a043f01a158f26b38c55e9676439c18f3804179&o=" />
+              <div class="place-info4">
+                <h3>7Seasons Apartments Budapest</h3>
+                <p>06. Terézváros, Hungary, Budapest</p>
+                <div class="rating4">
+                  <span>9.3</span>
+                </div>
+                <p><b>Tuyệt hảo</b> · 1.501 đánh giá</p>
+                <p>Bắt đầu từ<span class="price4"> US$270</span></p>
+              </div>
+            </div>
+            <div class="place-card4">
+              <img
+                src="https://cf.bstatic.com/xdata/images/hotel/square600/74529578.webp?k=2d2774a16aa0d58fe1fd0a467c57c6adf188344d7e908f7fd775ba17555259d5&o="
+                alt="Aparthotel Stare Miasto" />
+              <div class="place-info4">
+                <h3>Aparthotel Stare Miasto</h3>
+                <p>Old Town, Ba Lan, Kraków</p>
+                <div class="rating4">
+                  <span>8.3</span>
+                </div>
+                <p><b>Rất tốt</b> · 482 đánh giá</p>
+                <p>Bắt đầu từ<span class="price4"> US$35</span></p>
+              </div>
+            </div>
+            <div class="place-card4">
+              <img
+                src="https://cf.bstatic.com/xdata/images/hotel/square600/29466558.webp?k=7f9cf4736f69b30c20fa7a751bb8711fa195bc9ff6092d5412d52daf6cada17f&o="
+                alt="7Seasons Apartments Budapest" />
+              <div class="place-info4">
+                <h3>7Seasons Apartments Budapest</h3>
+                <p>06. Terézváros, Hungary, Budapest</p>
+                <div class="rating4">
+                  <span>9.4</span>
+                </div>
+                <p><b>Tuyệt hảo</b> · 670 đánh giá</p>
+                <p>Bắt đầu từ<span class="price4"> US$665</span></p>
+              </div>
+            </div>
+            <div class="place-card4">
+              <img
+                src="https://cf.bstatic.com/xdata/images/hotel/square600/64768746.webp?k=0c33d15be1f0c9ebd0ede9b85565c3233ef836884a40d785dd6b36f9f0f50c04&o=" />
+              <div class="place-info4">
+                <h3>Zoku Amterdam</h3>
+                <p>Hà Lan, Amterdam City Center</p>
+                <div class="rating4">
+                  <span>8.9</span>
+                </div>
+                <p><b>Tuyệt vời</b> · 2.784 đánh giá</p>
+                <p>Bắt đầu từ<span class="price4"> US$205</span></p>
+              </div>
+            </div>
+            <div class="place-card4">
+              <img
+                src="https://cf.bstatic.com/xdata/images/hotel/square600/420377357.webp?k=29a0e9879ac8361539c3dae41f047d383e6fa6917f8f47cb50dad001ada0eae6&o=" />
+              <div class="place-info4">
+                <h3>Flora Chiado Âprtments</h3>
+                <p>Bồ Đào Nha, Stanta Maria Maior</p>
+                <div class="rating4">
+                  <span>9.7</span>
+                </div>
+                <p><b>Tuyệt hảo</b> · 226 đánh giá</p>
+                <p>Bắt đầu từ<span class="price4"> US$583</span></p>
+              </div>
+            </div>
+          </div>
+          <button class="next4" onclick="scrollRight4()">&#10095;</button>
+        </div>
+  </nav4>
+  <br>
+  <section class="container5 popular-destinations5">
+    <h2 style="font-size: 30px;">Điểm đến đang thịnh hành</h2>
+    <p>Các lựa chọn phổ biến nhất cho du khách từ Việt Nam</p>
+
+    <div class="destination-grid5">
+      <div class="destination5">
+        <img
+          src="https://cf.bstatic.com/xdata/images/city/600x600/688893.jpg?k=d32ef7ff94e5d02b90908214fb2476185b62339549a1bd7544612bdac51fda31&o="
+          alt="TP. Hồ Chí Minh" />
+        <div class="overlay">
+          <h3>
+            TP. Hồ Chí Minh
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Vietnam.svg" alt="Vietnam Flag" />
+          </h3>
+        </div>
+      </div>
+      <div class="destination5">
+        <img
+          src="https://cf.bstatic.com/xdata/images/city/600x600/688956.jpg?k=fc88c6ab5434042ebe73d94991e011866b18ee486476e475a9ac596c79dce818&o="
+          alt="Vũng Tàu" />
+        <div class="overlay">
+          <h3>
+            Vũng Tàu
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Vietnam.svg" alt="Vietnam Flag" />
+          </h3>
+        </div>
+      </div>
+      <div class="destination5">
+        <img
+          src="https://cf.bstatic.com/xdata/images/city/600x600/688844.jpg?k=02892d4252c5e4272ca29db5faf12104004f81d13ff9db724371de0c526e1e15&o="
+          alt="Đà Nẵng" />
+        <div class="overlay">
+          <h3>
+            Đà Nẵng
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Vietnam.svg" alt="Vietnam Flag" />
+          </h3>
+        </div>
+      </div>
+      <div class="destination5 hanoi">
+        <img src="https://i.natgeofe.com/n/39181071-db55-488f-bd54-707759ad924e/river-hanoi-vietnam.jpg" alt="Hà Nội" />
+        <div class="overlay">
+          <h3>
+            Hà Nội
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Vietnam.svg" alt="Vietnam Flag" />
+          </h3>
+        </div>
+      </div>
+      <div class="destination5 dalat">
+        <img src="/image/dalat1.png" alt="Đà Lạt" />
+        <div class="overlay">
+          <h3>
+            Đà Lạt
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Vietnam.svg" alt="Vietnam Flag" />
+          </h3>
+        </div>
+      </div>
+    </div>
+  </section>
+  <br>
+
+  <nav6>
+    <div class="container6">
+      <h26>Phổ biến với du khách từ Việt Nam</h26>
+
+      <div class="tab-buttons6">
+        <button class="tab6 active6" onclick="showContent('domestic')">
+          Thành phố trong nước
+        </button>
+        <button class="tab6" onclick="showContent('international')">
+          Thành phố nước ngoài
+        </button>
+        <button class="tab6" onclick="showContent('region')">Khu vực</button>
+        <button class="tab6" onclick="showContent('country')">Quốc gia</button>
+        <button class="tab6" onclick="showContent('accommodation')">
+          Chỗ nghỉ
+        </button>
+      </div>
+
+      <!-- Domestic Content -->
+      <div class="content6 active6" id="domestic">
+        <div class="hotel-list6">
+          <div><a href="#">Khách sạn Vũng Tàu</a></div>
+          <div><a href="#">Khách sạn Hà Nội</a></div>
+          <div><a href="#">Khách sạn Quy Nhơn</a></div>
+          <div><a href="#">Khách sạn Cần Thơ</a></div>
+          <div><a href="#">Khách sạn Côn Đảo</a></div>
+          <div><a href="#">Khách sạn Nha Trang</a></div>
+          <div><a href="#">Khách sạn Huế</a></div>
+          <div><a href="#">Khách sạn Hạ Long</a></div>
+          <div><a href="#">Khách sạn Sầm Sơn</a></div>
+          <div><a href="#">Khách sạn Buôn Ma Thuột</a></div>
+        </div>
+      </div>
+
+      <!-- International Content -->
+      <div class="content6" id="international">
+        <div class="hotel-list6">
+          <div> <a href="#">Khách sạn Quảng Châu <br />
+              Trung Quốc</a>
+
+          </div>
+          <div><a href="#"> Khách sạn Paris <br />
+              Pháp</a>
+
+          </div>
+          <div><a href="#"> Khách sạn Siem Reap <br />
+              Campuchia</a>
+
+          </div>
+          <div><a href="#"> Khách sạn Siem Reap <br />
+              Thái Lan</a>
+
+          </div>
+          <div><a href="#"> Khách sạn LonDon <br />
+              Vương Quốc Anh</a>
+
+          </div>
+          <div><a href="#"> Khách sạn Singapore <br />
+              Singapore</a>
+
+          </div>
+          <div><a href="#">Khách sạn Kuala Lumpur <br />
+              Malaysia</a>
+
+          </div>
+          <div><a href="#"> Khách sạn Tokyo <br />
+              Nhật Bản</a>
+
+          </div>
+          <div><a href="#">Khách sạn Thượng Hải <br />
+              Trung Quốc</a>
+
+          </div>
+          <div><a href="#"> Khách sạn Sydney <br />
+              Úc</a>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Region Content -->
+      <div class="content6" id="region">
+        <div class="hotel-list6">
+          <div><a href="">Hà Nội</a></div>
+          <div><a href="#">Thành phố Đà Nẵng</a></div>
+          <div><a href="#">Đảo Phú Quốc</a></div>
+          <div><a href="#">Hải Phòng</a></div>
+          <div><a href="#">Phú Yên</a></div>
+          <div><a href="#">Quảng Bình</a></div>
+          <div><a href="#">Đồng bằng Sông Cửu Long</a></div>
+          <div><a href="#">Taibei Area</a></div>
+          <div><a href="#">Khu vực TP. Hồ Chí Minh</a></div>
+          <div><a href="#">Bali</a></div>
+        </div>
+      </div>
+
+      <!-- Placeholder Content for Country -->
+      <div class="content6" id="country">
+        <div class="hotel-list6">
+          <div><a href="#">Khách sạn Hồng Kông <br />
+              Trung Quốc</a>
+
+          </div>
+          <div><a href="#"> Khách sạn New York <br />
+              Mỹ</a>
+
+          </div>
+          <div><a href="#">Khách sạn London <br />
+              Vương Quốc Anh</a>
+
+          </div>
+          <div><a href="#">Khách sạn Berlin <br />
+              Đức</a>
+
+          </div>
+          <div><a href="#">Khách sạn Rome <br />
+              Ý</a>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Placeholder Content for Accommodation -->
+      <div class="content6" id="accommodation">
+        <div class="hotel-list6">
+          <div><a href="#">Khách sạn 5 sao tại Hồ Chí Minh</a></div>
+          <div><a href="#">Resort tại Đà Nẵng</a></div>
+          <div><a href="#">Nhà nghỉ tại Phú Quốc</a></div>
+          <div><a href="#">Khách sạn gia đình tại Hà Nội</a></div>
+          <div><a href="#">Villa tại Hội An</a></div>
+        </div>
+      </div>
+
+      <a href="#" class="show-more6" style="margin-top: 20px;">+ Hiển thị thêm</a>
+    </div>
+  </nav6>
+  <br>
+
+  <br><br>
+  <footer class="footer" style="background-color: rgb(234, 234, 234);">
+    <div class="footer-section">
+      <h3>Hỗ trợ</h3>
+      <ul>
+        <li>
+          <a href="#">Các câu hỏi thường gặp về virus corona (COVID-19)</a>
+        </li>
+        <li><a href="#">Quản lý các chuyến đi của bạn</a></li>
+        <li><a href="#">Liên hệ Dịch vụ Khách hàng</a></li>
+        <li><a href="#">Trung tâm thông tin bảo mật</a></li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h3>Khám phá thêm</h3>
+      <ul>
+        <li>
+          <a href="#">Chương trình khách hàng thân thiết Genius</a>
+        </li>
+        <li>
+          <a href="#">Ưu đãi theo mùa và dịp lễ</a>
+        </li>
+        <li>
+          <a href="#">Bài viết về du lịch</a>
+        </li>
+        <li>
+          <a href="#">Booking.com dành cho Doanh Nghiệp</a>
+        </li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h3>Điều khoản và cài đặt</h3>
+      <ul>
+        <li><a href="#">Bảo mật & Cookie</a></li>
+        <li><a href="#">Chính sách Bảo mật</a></li>
+        <li><a href="#">Điều khoản sử dụng</a></li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h3>Về</h3>
+      <ul>
+        <li><a href="#">Về Booking.com</a></li>
+        <li><a href="#">Tính bền vững</a></li>
+        <li><a href="#">Trung tâm báo chí</a></li>
+        <li><a href="#">Quan hệ nhà đầu tư</a></li>
+        <li><a href="#">Liên hệ công ty</a></li>
+    </div>
+    <div class="footer-section">
+      <h3>Đối tác</h3>
+      <ul>
+        <li>
+          <a href="#">Đăng nhập extranet
+
+        </li>
+        <li>
+          <a href="#">Trợ giúp đối tác
+
+        </li>
+        <li>
+          <a href="#">Đăng kí chỗ nghỉ
+
+        </li>
+      </ul>
+    </div>
+  </footer>
+  <div class="footer-bottom"> <a style="text-decoration: none;">AncientBooking.com là một phần của Booking Holdings
+      Inc.,
+      công ty hàng đầu thế giới về du lịch trực tuyến và các dịch vụ liên quan.<br>
+      Bản quyền © 1996–2025 AncientBooking.com™. Đã đăng ký Bản quyền.</a></div>
+</body>
+<script>
+
+  //nav2
+  // Dữ liệu các điểm đến
+  const destinations = {
+    beach: [
+      { name: "Hải Phòng", distance: "88 km", img: "/image/1haiphong.jpg" },
+      { name: "Hạ Long", distance: "128 km", img: "/image/1halong.jpg" },
+      { name: "Cát Bà", distance: "129 km", img: "/image/1catba.jpg" },
+      { name: "Sầm Sơn", distance: "144 km", img: "/image/1samson.jpg" },
+      { name: "Quảng Ninh", distance: "177 km", img: "/image/1quangninh.jpg" },
+      { name: "Cần Thơ", distance: "1.223 km", img: "/image/1cantho.jpg" },
+    ],
+    outdoor: [
+      { name: "Mai Châu", distance: "89 km", img: "/image/1maichau.jpg" },
+      { name: "Ninh Bình", distance: "87 km", img: "/image/1ninhbinh.jpg" },
+      { name: "Hà Giang", distance: "220 km", img: "/image/1hagiang.jpg" },
+      { name: "Sa Pa", distance: "254 km", img: "/image/1sapa.jpg" },
+      { name: "Phong Nha", distance: "385 km", img: "/image/1phongnha.jpg" },
+      { name: "Điện Biên Phủ", distance: "297 km", img: "/image/1dienbienphu.jpg" },
+    ],
+    city: [
+      { name: "Huế", distance: "540 km", img: "/image/1hue.jpg" },
+      { name: "Hội An", distance: "630 km", img: "/imagege/1hoian.jpg" },
+      { name: "TP.Hồ Chí Minh", distance: "1.144 km", img: "/image/1tphcm.jpg" },
+      { name: "Cái Bè", distance: "1.189 km", img: "/image/1caibe.jpg" },
+      { name: "Châu Đốc", distance: "1.151 km", img: "/image/1chaudoc.jpg" },
+      { name: "Đà Lạt", distance: "1.083 km", img: "/image/dalat1.png" },
+    ],
+    romantic: [
+      { name: "Cần Thơ", distance: "1.223 km", img: "/image/1cantho.jpg" },
+      { name: "Mekong Delta", distance: "1.190 km", img: "/image/1caibe.jpg" },
+      { name: "Hạ Long Bay", distance: "128 km", img: "/imagege/1halong.jpg" },
+      { name: "Cát Bà", distance: "129 km", img: "/imagegege/1catba.jpg" },
+      { name: "Hà Nội", distance: "0 km", img: "/image/1haiphong.jpg" },
+      { name: "Sầm Sơn Beach", distance: "144 km", img: "/image/1samson.jpg" },
+    ],
+    relax: [
+      { name: "Đà Lạt", distance: "1.083 km", img: "/image/dalat1.png" },
+      { name: "Huế", distance: "540 km", img: "/image/1hue.jpg" },
+      { name: "Hội An", distance: "630 km", img: "/image/1hoian.jpg" },
+      { name: "Sa Pa", distance: "254 km", img: "/imagege/1sapa.jpg" },
+      { name: "Ninh Bình", distance: "87 km", img: "/imagege/1ninhbinh.jpg" },
+      { name: "Phong Nha", distance: "385 km", img: "/image/1phongnha.jpg" },
+    ],
+  };
+
+  // Hàm để hiển thị danh sách điểm đến theo bộ lọc
+  function filterDestinations(type) {
+    const destinationContainer = document.getElementById("destinations1");
+    destinationContainer.innerHTML = ""; // Xóa nội dung cũ
+
+    // Lặp qua các điểm đến tương ứng với bộ lọc đã chọn
+    destinations[type].forEach((dest) => {
+      const card = document.createElement("div");
+      card.className = "destination-card";
+
+      const img = document.createElement("img");
+      img.src = dest.img;
+      img.alt = dest.name;
+
+      const title = document.createElement("h3");
+      title.textContent = dest.name;
+
+      const distance = document.createElement("p");
+      distance.textContent = `cách xa ${dest.distance}`;
+
+      // Thêm các phần tử vào card
+      card.appendChild(img);
+      card.appendChild(title);
+      card.appendChild(distance);
+
+      // Thêm card vào container
+      destinationContainer.appendChild(card);
+    });
+  }
+
+  // Mặc định hiển thị các điểm đến trong mục "Bãi biển"
+  filterDestinations("beach");
+
+  //nav3
+  let currentIndex = 0; // Vị trí hiện tại
+  const totalCards = 9; // Tổng số ảnh
+  const slideCount = 4; // Số ảnh hiển thị trong một lần
+
+  function updateButtonStates() {
+    const prevBtn = document.querySelector(".prev");
+    const nextBtn = document.querySelector(".next");
+
+    if (prevBtn) prevBtn.disabled = currentIndex === 0;
+    if (nextBtn) nextBtn.disabled = currentIndex >= totalCards - slideCount;
+  }
+
+  function displayImages() {
+    const container = document.querySelector(".places-container");
+
+    // Cập nhật vị trí ảnh dựa trên index (no modulo for boundary checking)
+    container.style.transform = `translateX(-${currentIndex * (25 + 10)
+      }%)`; // 25% là chiều rộng của mỗi hình ảnh + 10px khoảng cách
+    updateButtonStates();
+  }
+
+  function scrollToStart() {
+    currentIndex = 0; // Quay lại ảnh đầu tiên
+    displayImages();
+  }
+
+  function scrollRight() {
+    if (currentIndex < totalCards - slideCount) {
+      currentIndex++; // Chuyển sang phải
+      displayImages();
+    }
+  }
+
+  // Hiển thị ban đầu
+  displayImages();
+
+  //nav4
+  let currentIndex4 = 0; // Vị trí hiện tại
+  const totalCards4 = 8; // Tổng số ảnh
+  const slideCount4 = 4; // Số ảnh hiển thị trong một lần
+
+  function updateButtonStates4() {
+    const prevBtn4 = document.querySelector(".prev4");
+    const nextBtn4 = document.querySelector(".next4");
+
+    if (prevBtn4) prevBtn4.disabled = currentIndex4 === 0;
+    if (nextBtn4) nextBtn4.disabled = currentIndex4 >= totalCards4 - slideCount4;
+  }
+
+  function displayImages4() {
+    const container = document.querySelector(".places-container4");
+
+    // Cập nhật vị trí ảnh dựa trên index (no modulo for boundary checking)
+    container.style.transform = `translateX(-${currentIndex4 * (25 + 10)
+      }%)`; // 25% là chiều rộng của mỗi hình ảnh + 10px khoảng cách
+    updateButtonStates4();
+  }
+
+  function scrollToStart4() {
+    currentIndex4 = 0; // Quay lại ảnh đầu tiên
+    displayImages4();
+  }
+
+  function scrollRight4() {
+    if (currentIndex4 < totalCards4 - slideCount4) {
+      currentIndex4++; // Chuyển sang phải
+      displayImages4();
+    }
+  }
+
+  // Hiển thị ban đầu
+  displayImages4();
+
+  //nav6
+  function showContent(tabId) {
+    // Hide all content sections
+    const contents6 = document.querySelectorAll(".content6");
+    contents6.forEach((content6) => content6.classList.remove("active6"));
+
+    // Show the selected content section
+    document.getElementById(tabId).classList.add("active6");
+
+    // Remove 'active' class from all tabs and add it to the clicked tab
+    const tabs6 = document.querySelectorAll(".tab6");
+    tabs6.forEach((tab6) => tab6.classList.remove("active6"));
+    document
+      .querySelector(`.tab6[onclick="showContent('${tabId}')"]`)
+      .classList.add("active6");
+  }
+</script>
+<script>
+  // 1️⃣ Đồng nhất hostname
+  if (window.location.hostname === "localhost") {
+    window.location.replace(window.location.href.replace("localhost", "127.0.0.1"));
+  }
+
+</script>
+
+
+</html>

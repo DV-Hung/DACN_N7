@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chi tiết khách sạn</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/Xemchitiet.css" />
+
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <div class="logo">
+        <h1><a href="home.html" style="text-decoration: none; color: white;">AncientBooking.com</a></h1>
+      </div>
+      <div class="currency-contact">
+        <select>
+          <option value="usd">USD</option>
+          <option value="vnd">VND</option>
+        </select>
+        <div class="thongbao">
+          <i class="fa fa-bell"></i>
+          <a href="thongbao.html">Thông báo</a>
+        </div>
+        <div class="contact">
+          <i class="fas fa-envelope"></i>
+          <a href="z-lienhe.html">Liên hệ</a>
+        </div>
+      </div>
+      <div class="login-section">
+        <button class="main-button" onclick="toggleMenu()">
+          <i class="fa fa-user-circle"></i>
+          <p id="buttonusername">Tên người dùng</p>
+        </button>
+        <div id="dropdownMenu" class="dropdown-menu">
+          <button class="dropdown-button" onclick="viewAccountDetails()">Chi tiết tài khoản</button>
+          <button class="dropdown-button" onclick="logoutUser()">Đăng xuất</button>
+        </div>
+      </div>
+    </div>
+    <div class="options">
+      <button onclick="location.href='https:/vietnam.travel/';"><i class="fa fa-calendar-check"
+          style="font-size: 30px;"></i> Sự kiện</button>
+      <button onclick="location.href='https:/www.vietjetair.com/vi';"><i class="fa fa-plane"
+          style="font-size: 30px;"></i> Chuyến bay</button>
+      <button onclick="location.href='https:/taxigo.vn/';"><i class="fa fa-car" style="font-size: 30px;"></i>Thuê
+        xe</button>
+      <button onclick="location.href='booked.html';"><i class="fa fa-shopping-cart" style="font-size: 30px;"></i>Quản lý
+        đặt phòng</button>
+    </div>
+  </header>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem("user"));
+    const usernameButton = document.getElementById("buttonusername");
+    if (user && user.tenTaiKhoan) {
+      usernameButton.textContent = user.tenTaiKhoan;
+    } else {
+      usernameButton.textContent = "Khách";
+    }
+
+    function toggleMenu() {
+      const dropdown = document.getElementById("dropdownMenu");
+      dropdown.classList.toggle("show");
+    }
+
+    function logoutUser() {
+      localStorage.removeItem("user");
+      window.location.href = "login.html";
+    }
+
+    function viewAccountDetails() {
+      if (user) {
+        alert(
+          `Tên tài khoản: ${user.tenTaiKhoan}\n` +
+          `Email: ${user.email}\n` +
+          `SĐT: ${user.sdt}\n` +
+          `Mật khẩu: ${user.matKhau}\n` +
+          `Ngày tạo: ${new Date(user.ngayTao).toLocaleString()}`
+        );
+      } else {
+        alert("Chưa đăng nhập!");
+      }
+    }
+
+    window.onclick = function (event) {
+      const dropdown = document.getElementById("dropdownMenu");
+      const button = document.querySelector(".login-section button");
+      if (!button.contains(event.target)) {
+        dropdown.classList.remove("show");
+      }
+    };
+  </script>
+
+  <div class="content-wrapper">
+    <div class="hotel-detail">
+      <!-- Bên trái: hình ảnh -->
+      <div class="hotel-images">
+        <img src="" alt="Ảnh chính" class="main-image" />
+      </div>
+
+      <!-- Bên phải: thông tin khách sạn -->
+      <div class="hotel-info">
+        <!-- Thông tin sẽ được load bằng JS -->
+      </div>
+
+      <!-- Icon Home góc trên phải -->
+      <a href="home.html" class="home-icon" title="Trang chủ">
+        <i class="fas fa-house"></i>
+      </a>
+    </div>
+
+    <!-- Khung mô tả -->
+    <div class="description-box">
+      <h3>Mô tả khách sạn</h3>
+      <p></p>
+    </div>
+
+    <!-- Phần phòng trống -->
+    <div class="rooms-section">
+      <h3>Phòng trống</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Mã phòng</th>
+            <th>Ảnh phòng</th>
+            <th>Loại phòng</th>
+            <th>Số người</th>
+
+            <th>Giá (VND)</th>
+            <th>Trạng thái</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <!-- Đánh giá -->
+      <div class="review-section">
+        <h3>Đánh giá của khách</h3>
+        <div class="review-summary">
+          <div class="score-box">0</div>
+          <span>- 0 đánh giá</span>
+        </div>
+        <h3>Các đánh giá nổi bật</h3>
+        <!-- Bảng đánh giá -->
+        <table class="review-table">
+          <thead>
+            <tr>
+              <th>Nội dung đánh giá</th>
+              <th>Điểm đánh giá</th>
+            </tr>
+          </thead>
+          <tbody id="review-tbody"></tbody>
+        </table>
+
+        <button class="btn-review" onclick="goToReview()">Đánh giá</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/utils.js"></script>
+  <script>
+    const hotelApiUrl = "http://localhost:8080/api/v1/hotels";
+    const roomApiUrl = "http://localhost:8080/api/v1/rooms/hotels";
+
+    // --- Lấy maKS từ URL ---
+    const params = new URLSearchParams(window.location.search);
+    const maKS = params.get("maKS");
+
+    // --- Hàm chuyển sang trang đánh giá ---
+    function goToReview() {
+      // Kiểm tra user đã đăng nhập
+      const token = localStorage.getItem("access_token");
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+      if (!token || !user.id) {
+        alert("Bạn cần đăng nhập để đánh giá!");
+        window.location.href = "login.html";
+        return;
+      }
+
+      if (!maKS) {
+        alert("Không xác định được khách sạn!");
+        return;
+      }
+      sessionStorage.setItem("selectedHotelId", maKS);
+      window.location.href = "reviewing.html";
+    }
+
+    async function loadHotelDetail() {
+      if (!maKS) return;
+
+      try {
+        // Load thông tin khách sạn
+        const res = await apiCall(`${hotelApiUrl}/${maKS}`);
+        if (!res) return;
+
+        const result = await res.json();
+        const ks = result.data || {};
+
+        // Hình ảnh
+        const mainImageEl = document.querySelector(
+          ".hotel-images .main-image"
+        );
+
+        mainImageEl.src = ks.image
+          ? `http://localhost:8080/storage/khachsan/${ks.image}`
+          : "";
+
+        // Thông tin khách sạn
+        const hotelInfoEl = document.querySelector(".hotel-info");
+        hotelInfoEl.innerHTML = `
+        <h2>${ks.name}</h2>
+        <p><b>Địa chỉ:</b> ${ks.address}</p>
+        <p><b>Đánh giá:</b> ${(ks.rate || 0).toFixed(1)}/10</p>
+        <p><b>Tiện ích:</b></p>
+        <ul>
+          ${ks.utilities
+            ? ks.utilities
+              .split(",")
+              .map((t) => `<li>${t.trim()}</li>`)
+              .join("")
+            : ""
+          }
+        </ul>
+      `;
+
+        // Mô tả
+        document.querySelector(".description-box p").textContent =
+          ks.introduction || "Chưa có mô tả cho khách sạn này.";
+
+        // Load phòng trống
+        const tbodyEl = document.querySelector("table tbody");
+        tbodyEl.innerHTML = "";
+        const roomRes = await apiCall(`${roomApiUrl}/${maKS}?page=0&size=100`);
+        if (roomRes) {
+          const roomResult = await roomRes.json();
+          const rooms = roomResult.data?.result || [];
+
+          // Lọc chỉ phòng trống (AVAILABLE)
+          const availableRooms = rooms.filter(p => p.available === "AVAILABLE");
+
+          if (availableRooms && availableRooms.length > 0) {
+            availableRooms.forEach((p) => {
+              const tr = document.createElement("tr");
+
+              // Map room type to display label
+              let roomTypeDisplay = p.roomType || '';
+              switch (p.roomType?.toUpperCase()) {
+                case 'SINGLE':
+                  roomTypeDisplay = '1 Giường đơn';
+                  break;
+                case 'DOUBLE':
+                  roomTypeDisplay = '1 Giường đôi';
+                  break;
+                case 'TWIN':
+                  roomTypeDisplay = '2 Giường đơn';
+                  break;
+                case 'FAMILY':
+                  roomTypeDisplay = 'Gia đình';
+                  break;
+              }
+
+              const bookBtn = `<button class="btn-book" onclick="window.location.href='booking.html?maPhong=${p.id}'">Đặt phòng</button>`;
+
+              const imgSrc = p.roomImage
+                ? `http://localhost:8080/storage/phong/${p.roomImage}`
+                : "";
+
+              tr.innerHTML = `
+                <td>${p.id}</td>
+                <td>${imgSrc ? `<img class="anhBangPhong" src="${imgSrc}" />` : ""}</td>
+                <td>${roomTypeDisplay}</td>
+                <td>${p.capacity || 0}</td>
+                
+                <td>${parseInt(p.price || 0).toLocaleString()}</td>
+                <td style="color: green">Trống</td>
+                <td>${bookBtn}</td>
+              `;
+              tbodyEl.appendChild(tr);
+            });
+          } else {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `<td colspan="8" style="text-align: center; color: #999;">Không có phòng trống</td>`;
+            tbodyEl.appendChild(tr);
+          }
+        }
+
+        // Load đánh giá
+        try {
+          const reviewApiUrl = `http://localhost:8080/api/v1/reviews/hotels/${maKS}`;
+          const reviewRes = await apiCall(reviewApiUrl);
+          if (reviewRes) {
+            const reviewData = await reviewRes.json();
+            const reviews = reviewData.data || [];
+
+            // Cập nhật điểm đánh giá trung bình
+            if (reviews.length > 0) {
+              const avgRating = (reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length).toFixed(1);
+              document.querySelector(".score-box").textContent = avgRating;
+              document.querySelector(".review-summary span").textContent = `- ${reviews.length} đánh giá`;
+
+              // Hiển thị các đánh giá
+              const reviewTbody = document.getElementById("review-tbody");
+              reviewTbody.innerHTML = "";
+              reviews.forEach((review) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                  <td>${review.comment || "N/A"}</td>
+                  <td>${review.rating || 0}/10</td>
+                `;
+                reviewTbody.appendChild(tr);
+              });
+            }
+          }
+        } catch (err) {
+          console.error("Lỗi load đánh giá:", err);
+        }
+
+      } catch (err) {
+        console.error("Lỗi load chi tiết khách sạn:", err);
+      }
+    }
+
+    window.addEventListener('load', loadHotelDetail);
+  </script>
+</body>
+
+</html>

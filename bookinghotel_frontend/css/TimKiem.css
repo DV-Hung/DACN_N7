@@ -1,0 +1,501 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Roboto", sans-serif;
+    background-color: #f0f0f0;
+}
+
+/*header*/
+header {
+    background-color: #003580;
+    padding: 20px;
+    color: white;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo h1 {
+    font-size: 24px;
+}
+
+.options a {
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+}
+
+.options {
+    margin-top: 10px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.options button {
+    background-color: transparent;
+    border: none;
+    color: white;
+    margin: 0;
+    font-size: 23px;
+    cursor: pointer;
+    width: auto;
+    flex: 0 1 auto;
+    padding:10px 20px;
+}
+
+.options button:hover {
+    border: 2px solid white;
+    border-radius: 30px / 30px;
+    /* Chiều dài, chiều rộng khác nhau tạo hiệu ứng bầu dục */
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 8px 12px;
+}
+
+.login-section {
+    display: flex;
+    align-items: center;
+    position: relative;
+    /* Để dropdown menu có thể được định vị chính xác */
+}
+
+.main-button {
+    background-color: #007bff;
+    /* Màu nền nút chính */
+    color: white;
+    /* Màu chữ */
+    border: none;
+    /* Không đường viền */
+    padding: 10px 15px;
+    /* Khoảng cách bên trong */
+    border-radius: 5px;
+    /* Bo tròn các góc */
+    display: flex;
+    /* Để căn giữa biểu tượng và văn bản */
+    align-items: center;
+    cursor: pointer;
+    /* Con trỏ chuột khi di chuột qua */
+    transition: background-color 0.3s;
+    /* Hiệu ứng chuyển màu */
+}
+
+.main-button:hover {
+    background-color: #0056b3;
+    /* Màu nền khi di chuột qua */
+}
+
+.dropdown-menu {
+    display: none;
+    /* Ẩn menu ban đầu */
+    position: absolute;
+    /* Để menu nằm phía dưới nút */
+    background-color: white;
+    /* Màu nền của menu */
+    border: 1px solid #ccc;
+    /* Đường viền */
+    border-radius: 5px;
+    /* Bo tròn các góc */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    /* Đổ bóng */
+    z-index: 1000;
+    /* Đảm bảo menu nằm trên các phần tử khác */
+    margin-top: 220px;
+    /* Khoảng cách giữa nút và menu */
+    width: 150px;
+    /* Đặt chiều rộng cố định cho menu */
+}
+
+.dropdown-button {
+    display: block;
+    /* Để các nút trong menu xếp chồng lên nhau */
+    padding: 10px;
+    /* Khoảng cách bên trong */
+    border: none;
+    /* Không đường viền */
+    background-color: transparent;
+    /* Màu nền trong suốt */
+    color: #333;
+    /* Màu chữ */
+    text-align: left;
+    /* Căn trái chữ */
+    border-radius: 5px;
+    /* Bo tròn các góc */
+    cursor: pointer;
+    /* Con trỏ chuột khi di chuột qua */
+    transition: background-color 0.3s, color 0.3s;
+    /* Hiệu ứng chuyển màu */
+}
+
+.dropdown-button:hover {
+    background-color: #f0f0f0;
+    /* Màu nền khi di chuột qua */
+    color: #007bff;
+    /* Thay đổi màu chữ khi di chuột qua */
+}
+
+.currency-contact {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+
+.currency-contact select {
+    background-color: #003580;
+    border: none;
+    color: white;
+    margin-right: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.currency-contact .contact {
+    color: rgb(255, 255, 255);
+    font-size: 16px;
+    cursor: pointer;
+    margin-right: 10px;
+    display: flex;
+    /* Thay đổi kiểu hiển thị thành flex để căn giữa */
+    align-items: center;
+    /* Căn giữa dọc */
+}
+
+.currency-contact .contact i {
+    margin-right: 5px;
+    /* Thêm khoảng cách giữa biểu tượng và văn bản */
+}
+
+.currency-contact .thongbao {
+    color: rgb(255, 255, 255);
+    font-size: 16px;
+    cursor: pointer;
+    margin-right: 10px;
+    display: flex;
+    /* Thay đổi kiểu hiển thị thành flex để căn giữa */
+    align-items: center;
+    /* Căn giữa dọc */
+}
+
+.currency-contact .thongbao i {
+    margin-right: 5px;
+    /* Thêm khoảng cách giữa biểu tượng và văn bản */
+}
+
+.thongbao a {
+    text-decoration: none;
+    color: aliceblue;
+}
+
+.contact a {
+    text-decoration: none;
+    color: aliceblue;
+}
+
+.thongbao:hover {
+    border: 2px solid white;
+    border-radius: 30px / 30px;
+    /* Chiều dài, chiều rộng khác nhau tạo hiệu ứng bầu dục */
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 8px 12px;
+}
+
+.contact:hover {
+    border: 2px solid white;
+    border-radius: 30px / 30px;
+    /* Chiều dài, chiều rộng khác nhau tạo hiệu ứng bầu dục */
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 8px 12px;
+}
+
+/*section*/
+.search-section {
+    background-color: #003580;
+    color: white;
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.search-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.search-container h20 {
+    font-size: 50px;
+    margin-bottom: 10px;
+}
+
+.search-container p {
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+.search-form {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.search-input,
+.date-input,
+.guest-control,
+.search-btn {
+    padding: 10px;
+    border: none;
+    border-radius: 3px;
+    font-size: 16px;
+}
+
+.search-input {
+    flex: 2;
+}
+
+.date-input {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.guest-control {
+    flex: 1.5;
+    position: relative;
+    margin-right: 10px;
+}
+
+.guest-control input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.search-btn {
+    background-color: #0071c2;
+    color: white;
+    cursor: pointer;
+    flex: 0.5;
+    margin-left: 10px;
+}
+
+.search-btn a {
+    text-decoration: none;
+    color: white;
+}
+
+.search-btn:hover {
+    background-color: #034cc1;
+}
+
+.guests-popup {
+    position: absolute;
+    top: 50px;
+    background-color: white;
+    color: black;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border-radius: 5px;
+    z-index: 1;
+    width: 350px;
+    display: none;
+}
+
+.guests-popup div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.guests-popup button {
+    background-color: #0071c2;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.dropdown-menu {
+    display: none;
+    /* Ẩn mặc định */
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    right: 0;
+
+    z-index: 1000;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown-menu.show {
+    display: block;
+    /* Hiển thị khi toggle */
+}
+
+.dropdown-button {
+    display: block;
+    width: 100%;
+    padding: 5px 10px;
+    margin-bottom: 5px;
+    background-color: #f1f1f1;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    border-radius: 4px;
+}
+
+.dropdown-button:hover {
+    background-color: #ddd;
+}
+
+body2 {
+    font-family: "Roboto", sans-serif;
+    background: #f0f0f0;
+    padding: 40px 20px;
+    box-sizing: border-box;
+}
+
+#searchResults {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.hotel-card {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hotel-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.hotel-image {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+}
+
+.hotel-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px 10px 0 0;
+}
+
+.hotel-content {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.hotel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    gap: 10px;
+}
+
+.hotel-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+    color: #003580;
+    line-height: 1.3;
+}
+
+.hotel-rating {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0071c2;
+    flex-shrink: 0;
+}
+
+.hotel-info {
+    font-size: 13px;
+    margin-bottom: 4px;
+    color: #666;
+}
+
+.hotel-info strong {
+    color: #333;
+}
+
+.price-section {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.room-price {
+    font-size: 18px;
+    font-weight: bold;
+    color: #ff5722;
+}
+
+.btn-detail {
+    background: #0071c2;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.btn-detail:hover {
+    background: #034cc1;
+}
+
+#searchResults h1 {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: 20px;
+    background: #f0f0f0;
+    text-align: center;
+    font-size: 28px;
+    color: #333;
+    border-radius: 10px;
+}
+
+@media (max-width: 1200px) {
+    #searchResults {
+    grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    #searchResults {
+    grid-template-columns: 1fr;
+    }
+}

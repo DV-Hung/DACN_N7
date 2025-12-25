@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quản lý đặt phòng - AncientBooking</title>
+  <link rel="stylesheet" href="/css/QuanLyDatPhong.css" />
+
+</head>
+
+<body>
+  <!-- ===== THANH NAVBAR ===== -->
+  <div class="navbar">
+    <div class="navbar-left">
+      <h2 style="color: white" onclick="window.location.href='home.html'">
+        AncientBooking.com
+      </h2>
+    </div>
+
+    <div class="navbar-right">
+      <span>USD ▼</span>
+      <span><i class="fa fa-bell"></i>Thông báo</span>
+      <span><i class="fa fa-envelope"></i>Liên hệ</span>
+      <button class="user-btn">
+        <i class="fa fa-user"></i>
+        <span id="userNameDisplay">Tên người dùng</span>
+      </button>
+    </div>
+  </div>
+  <button onclick="history.back()" class="back-btn">← Quay lại</button>
+
+  <!-- ===== NỘI DUNG CHÍNH ===== -->
+  <div class="content">
+    <h2>Quản lý đặt phòng</h2>
+
+    <div class="booking-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Tên khách sạn</th>
+            <th>Địa chỉ</th>
+            <th>Loại phòng</th>
+            <th>Email</th>
+            <th>Số điện thoại</th>
+            <th>Họ tên</th>
+            <th>Ngày nhận</th>
+            <th>Ngày trả</th>
+            <th>Tổng chi phí</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody id="bookingTableBody">
+          <!-- Dữ liệu sẽ load từ server -->
+        </tbody>
+      </table>
+    </div>
+
+    <p class="footer-note">Trang quản lý đặt phòng - AncientBooking © 2025</p>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+  <script src="/js/utils.js"></script>
+  <script>
+    const billApiUrl = "http://localhost:8080/api/v1/bills";
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    document.getElementById("userNameDisplay").textContent =
+      user.email || "Người dùng";
+
+    // Hàm hủy booking
+    async function cancelBooking(billId) {
+      if (!confirm("Bạn có chắc muốn hủy đặt phòng này không?"))
+        return;
+
+      try {
+        const res = await apiCall(`${billApiUrl}/${billId}`, {
+          method: "DELETE",
+        });
+
+        if (!res || !res.ok) {
+          throw new Error("Hủy đặt phòng thất bại");
+        }
+
+        alert("Đã hủy đặt phòng thành công!");
+        loadBookings(); // Tải lại danh sách
+      } catch (err) {
+        console.error(err);
+        alert("Không thể hủy đặt phòng. Vui lòng thử lại!");
+      }
+    }
+
+    // Hàm load danh sách booking của user
+    async function loadBookings() {
+      try {
+        // Gọi API lấy tất cả bills của user hiện tại
+        const res = await apiCall(`${billApiUrl}/user/${user.id}`);
+
+        if (!res) {
+          throw new Error("Lỗi khi load danh sách đặt phòng");
+        }
+
+        const result = await res.json();
+        const bookings = result.data || [];
+
+        const tbody = document.getElementById("bookingTableBody");
+        tbody.innerHTML = "";
+
+        if (!bookings || bookings.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px; color: #666;">Bạn chưa có đặt phòng nào</td></tr>';
+          return;
+        }
+
+        bookings.forEach((bill) => {
+          const tr = document.createElement("tr");
+
+          // Format ngày tháng
+          const checkInDate = new Date(bill.checkInDate).toLocaleDateString("vi-VN");
+          const checkOutDate = new Date(bill.checkOutDate).toLocaleDateString("vi-VN");
+
+          // Format tổng chi phí
+          const totalCost = parseFloat(bill.totalCost).toLocaleString("vi-VN") + " đ";
+
+          // Dịch loại phòng
+          let roomTypeDisplay = bill.roomType || "N/A";
+          switch (bill.roomType?.toUpperCase()) {
+            case "SINGLE":
+              roomTypeDisplay = "1 Giường đơn";
+              break;
+            case "DOUBLE":
+              roomTypeDisplay = "1 Giường đôi";
+              break;
+            case "TWIN":
+              roomTypeDisplay = "2 Giường đơn";
+              break;
+            case "FAMILY":
+              roomTypeDisplay = "Gia đình";
+              break;
+          }
+
+          tr.innerHTML = `
+        <td>${bill.name_hotel || "N/A"}</td>
+        <td>${bill.address_hotel || "N/A"}</td>
+        <td>${roomTypeDisplay}</td>
+        <td>${bill.username}</td>
+        <td>${bill.phoneNumber}</td>
+        <td>${bill.email}</td>
+        <td>${checkInDate}</td>
+        <td>${checkOutDate}</td>
+        <td>${totalCost}</td>
+        <td>
+          <button class="btn-cancel" onclick="cancelBooking(${bill.id})">
+            Hủy đặt phòng
+          </button>
+        </td>
+      `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error(err);
+        alert("Không thể tải danh sách đặt phòng!");
+      }
+    }
+
+    window.addEventListener("load", loadBookings);
+  </script>
+</body>
+
+</html>
