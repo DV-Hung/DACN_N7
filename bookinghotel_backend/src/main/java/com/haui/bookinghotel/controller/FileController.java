@@ -22,11 +22,12 @@ import java.util.List;
 @RequestMapping("/api/v1")
 public class FileController {
     private final FileService fileService;
+
     public FileController(FileService fileService) {
         this.fileService = fileService;
     }
 
-    @Value("${hoidanit.upload-file.base-uri}")
+    @Value("${DACN.upload-file.base-uri}")
     private String baseUri;
 
     @PostMapping("/files")
@@ -34,22 +35,21 @@ public class FileController {
     public ResponseEntity<ResUploadFileDTO> upload(
             @RequestParam(name = "file", required = false) MultipartFile file,
             @RequestParam("folder") String folder) throws URISyntaxException, IOException, StorageException {
-        //validate
-        if(file == null || file.isEmpty())
-        {
+        // validate
+        if (file == null || file.isEmpty()) {
             throw new StorageException("File is empty. Please choose a file");
         }
         String fileName = file.getOriginalFilename();
-        List<String> allowedExtensions = Arrays.asList("pdf","jpg","png","doc","docx", "jpeg");
-        boolean isValid= allowedExtensions.stream().anyMatch(item -> fileName.toLowerCase().endsWith(item));
-        if(!isValid){
+        List<String> allowedExtensions = Arrays.asList("pdf", "jpg", "png", "doc", "docx", "jpeg");
+        boolean isValid = allowedExtensions.stream().anyMatch(item -> fileName.toLowerCase().endsWith(item));
+        if (!isValid) {
             throw new StorageException("File is not valid. Please choose a valid extension");
         }
         // create a dir if not exist
         this.fileService.createUploadFolder(baseUri + folder);
 
-        //store file
-        String finalName= this.fileService.store(file,folder);
+        // store file
+        String finalName = this.fileService.store(file, folder);
         ResUploadFileDTO res = new ResUploadFileDTO();
         res.setFileName(finalName);
         res.setUploadAt(Instant.now());

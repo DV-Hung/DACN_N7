@@ -30,15 +30,16 @@ public class ReviewService {
         this.userService = userService;
         this.hotelService = hotelService;
     }
-    public boolean isValidId(ReviewId id){
+
+    public boolean isValidId(ReviewId id) {
         return this.reviewRepository.existsById(id);
     }
 
-    public boolean isValidUser(Long id){
+    public boolean isValidUser(Long id) {
         return this.userService.isIdExist(id);
     }
 
-    public boolean isValidHotel(Long id){
+    public boolean isValidHotel(Long id) {
         return this.hotelService.isIdExist(id);
     }
 
@@ -64,12 +65,18 @@ public class ReviewService {
         return review.orElse(null);
     }
 
+    public List<ReviewResponse> handleFetchReviewByHotelId(Long hotelId) {
+        Hotel hotel = this.hotelService.handleFetchHotelById(hotelId);
+        Set<Review> reviews = hotel.getReviews();
+        return reviews.stream().map(this::convertToResponse).toList();
+    }
+
     public Review handleCreateReview(ReviewRequest reqReview) {
         Review review = new Review();
         User user = this.userService.handleFetchUserById(reqReview.getUser_id());
-        Hotel hotel  = this.hotelService.handleFetchHotelById(reqReview.getHotel_id());
-        Set<Review> reviewHotel= hotel.getReviews();
-        hotel.setRate((hotel.getRate()*reviewHotel.size() + reqReview.getRating()) / (reviewHotel.size() +1));
+        Hotel hotel = this.hotelService.handleFetchHotelById(reqReview.getHotel_id());
+        Set<Review> reviewHotel = hotel.getReviews();
+        hotel.setRate((hotel.getRate() * reviewHotel.size() + reqReview.getRating()) / (reviewHotel.size() + 1));
         review.setHotel(hotel);
         review.setUser(user);
         review.setRating(reqReview.getRating());
@@ -105,7 +112,8 @@ public class ReviewService {
         return res;
     }
 
-
+    public int handleFetchQuantity() {
+        List<Review> reviews = this.reviewRepository.findAll();
+        return reviews.size();
+    }
 }
-
-

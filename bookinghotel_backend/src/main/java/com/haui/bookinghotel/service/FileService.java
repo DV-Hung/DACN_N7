@@ -17,7 +17,7 @@ import java.nio.file.StandardCopyOption;
 @Service
 public class FileService {
 
-    @Value("${hoidanit.upload-file.base-uri}")
+    @Value("${DACN.upload-file.base-uri}")
     private String baseUri;
 
     public void createUploadFolder(String folder) throws URISyntaxException {
@@ -50,12 +50,12 @@ public class FileService {
     }
 
     public long getFileLength(String fileName, String folder) throws URISyntaxException {
-        URI uri= new URI(baseUri + folder + "/" + fileName);
+        URI uri = new URI(baseUri + folder + "/" + fileName);
         Path path = Paths.get(uri);
         File tmpDir = new File(path.toString());
 
-        //file not found or file is a direactory => return 0
-        if(!tmpDir.exists() || tmpDir.isDirectory()) {
+        // file not found or file is a direactory => return 0
+        if (!tmpDir.exists() || tmpDir.isDirectory()) {
             return 0;
         }
         return tmpDir.length();

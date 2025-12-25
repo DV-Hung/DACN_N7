@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ancient Booking - Đăng nhập</title>
+  <link rel="stylesheet" href="/css/DangNhap.css" />
+
+</head>
+
+<body>
+  <div class="login-container">
+    <h1>Đăng nhập</h1>
+    <form>
+      <input type="text" id="username" placeholder="Tên tài khoản" required />
+
+      <div class="password-container">
+        <input type="password" id="password" placeholder="Mật khẩu" required />
+        <button type="button" class="toggle-password" onclick="togglePassword()">
+          &#128065;
+        </button>
+      </div>
+      <button type="submit">Đăng nhập</button>
+      <div class="options">
+        <a href="#">Quên mật khẩu?</a> |
+        <a href="register.html">Đăng ký ngay</a>
+      </div>
+    </form>
+  </div>
+  <script>
+    const authApiUrl = "http://localhost:8080/api/v1/auth/login";
+
+    // --- Toggle mật khẩu ---
+    function togglePassword() {
+      const passwordField = document.getElementById("password");
+      const toggleBtn = document.querySelector(".toggle-password");
+      if (passwordField.type === "password") {
+        passwordField.type = "text";
+        toggleBtn.innerHTML = "&#128064;";
+      } else {
+        passwordField.type = "password";
+        toggleBtn.innerHTML = "&#128065;";
+      }
+    }
+
+    // --- Lấy dữ liệu form ---
+    function getFormData() {
+      return {
+        username: document.getElementById("username").value.trim(),
+        password: document.getElementById("password").value.trim(),
+      };
+    }
+
+    // --- Validate dữ liệu ---
+    function validate(data) {
+      if (!data.username || !data.password) {
+        alert("Vui lòng nhập đầy đủ thông tin!");
+        return false;
+      }
+      return true;
+    }
+
+    // --- Đăng nhập ---
+    async function login() {
+      const data = getFormData();
+      if (!validate(data)) return;
+
+      try {
+        // Gọi API đăng nhập backend
+        const res = await fetch(authApiUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // để gửi cookie (nếu có)
+          body: JSON.stringify({
+            username: data.username,
+            password: data.password,
+          }),
+        });
+
+        if (!res.ok) {
+          if (res.status === 401 || res.status === 400) {
+            alert("Tên tài khoản hoặc mật khẩu không chính xác!");
+          } else {
+            alert("Lỗi đăng nhập. Vui lòng thử lại!");
+          }
+          return;
+        }
+
+        const resData = await res.json();
+        const accessToken = resData.data?.access_token;
+
+        if (!accessToken) {
+          alert("Không nhận được token từ server!");
+          return;
+        }
+
+        // Lưu access token vào localStorage
+        localStorage.setItem("access_token", accessToken);
+
+        // Lấy thông tin user từ API /account
+        const accountRes = await fetch("http://localhost:8080/api/v1/auth/account", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
+
+        if (accountRes.ok) {
+          const accountData = await accountRes.json();
+          const user = accountData.data?.user || {};
+
+          alert("Đăng nhập thành công!");
+          // Lưu thông tin user
+          localStorage.setItem("user", JSON.stringify({
+            id: user.id,
+            email: user.email,
+            tenTaiKhoan: user.email, // dùng email làm username
+            name: user.name,
+            role: user.role, // "USER" hoặc "ADMIN"
+          }));
+
+          // Chuyển hướng dựa trên role
+          if (user.role === "ADMIN") {
+            window.location.href = "admin.html";
+          } else {
+            window.location.href = "home.html";
+          }
+        } else {
+          // Nếu không lấy được account info, lưu token và chuyển hướng mặc định
+          alert("Đăng nhập thành công!");
+          window.location.href = "home.html";
+        }
+      } catch (err) {
+        console.error("Lỗi đăng nhập:", err);
+        alert("Không thể kết nối đến server!");
+      }
+    }
+
+    // --- Submit form ---
+    document
+      .querySelector("form")
+      .addEventListener("submit", function (event) {
+        event.preventDefault();
+        login();
+      });
+  </script>
+</body>
+
+</html>

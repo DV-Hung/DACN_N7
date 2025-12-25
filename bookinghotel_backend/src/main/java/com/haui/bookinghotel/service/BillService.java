@@ -4,18 +4,19 @@ import com.haui.bookinghotel.domain.Bill;
 import com.haui.bookinghotel.domain.Room;
 import com.haui.bookinghotel.domain.User;
 import com.haui.bookinghotel.domain.request.BillRequest;
+import com.haui.bookinghotel.domain.request.RoomRequest;
 import com.haui.bookinghotel.domain.response.Meta;
 import com.haui.bookinghotel.domain.response.ResultPaginationDTO;
 import com.haui.bookinghotel.domain.response.bill.BillResponse;
 import com.haui.bookinghotel.repository.BillRepository;
-import com.haui.bookinghotel.repository.RoomRepository;
-import com.haui.bookinghotel.repository.UserRepository;
+import com.haui.bookinghotel.util.constant.RoomStatus;
 import com.turkraft.springfilter.boot.Filter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,7 +30,6 @@ public class BillService {
         this.userService = userService;
         this.roomService = roomService;
     }
-
 
     public ResultPaginationDTO handleFetchAllBills(@Filter Specification<Bill> spec, Pageable pageable) {
         Page<Bill> pageBill = this.billRepository.findAll(spec, pageable);
@@ -50,6 +50,12 @@ public class BillService {
         return bill.orElse(null);
     }
 
+    public List<BillResponse> handleFetchBillByUserId(Long userId) {
+        User user = this.userService.handleFetchUserById(userId);
+        List<BillResponse> bills = user.getBills().stream().map(this::covertToResponse).toList();
+        return bills;
+    }
+
     public Bill handleCreateBill(BillRequest reqBill) {
         Bill bill = new Bill();
         bill.setUsername(reqBill.getUsername());
@@ -63,6 +69,7 @@ public class BillService {
         bill.setUser(user);
         Room room = this.roomService.handleFetchRoomById(reqBill.getRoom_id());
         bill.setRoom(room);
+        room.setAvailable(RoomStatus.BOOKED);
         return this.billRepository.save(bill);
     }
 
@@ -84,6 +91,11 @@ public class BillService {
     }
 
     public void handleDeleteBill(Long id) {
+        Bill bill = this.handleFetchBillById(id);
+        Room room = bill.getRoom();
+        room.setAvailable(RoomStatus.AVAILABLE);
+        RoomRequest roomRequest = this.roomService.convertToRequest(room);
+        this.roomService.handleUpdateRoom(roomRequest, room.getHotel());
         this.billRepository.deleteById(id);
     }
 
@@ -98,8 +110,17 @@ public class BillService {
         res.setPhoneNumber(bill.getPhoneNumber());
         res.setRoom_id(bill.getRoom().getId());
         res.setUser_id(bill.getUser().getId());
+        res.setAddress_hotel(bill.getRoom().getHotel().getAddress());
+        res.setName_hotel(bill.getRoom().getHotel().getName());
+        res.setRoomType(bill.getRoom().getRoomType());
         return res;
     }
+
+    public int handleFetchQuantity() {
+        return (int) this.billRepository.count();
+    }
+
+    public boolean isIdExist(Long id) {
+        return billRepository.existsById(id);
+    }
 }
-
-

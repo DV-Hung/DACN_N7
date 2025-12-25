@@ -4,6 +4,7 @@ import com.haui.bookinghotel.domain.Hotel;
 import com.haui.bookinghotel.domain.response.Meta;
 import com.haui.bookinghotel.domain.response.ResultPaginationDTO;
 import com.haui.bookinghotel.repository.HotelRepository;
+import com.haui.bookinghotel.util.constant.RoomStatus;
 import com.turkraft.springfilter.boot.Filter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,17 +17,28 @@ import java.util.Optional;
 @Service
 public class HotelService {
     private final HotelRepository hotelRepository;
-    
+
     public HotelService(HotelRepository hotelRepository) {
         this.hotelRepository = hotelRepository;
     }
 
-    public boolean isIdExist(Long id){
+    public int handleFetchQuantity() {
+        return (int) this.hotelRepository.count();
+    }
+
+    public boolean isIdExist(Long id) {
         return hotelRepository.existsById(id);
     }
 
     public ResultPaginationDTO handleFetchAllHotels(@Filter Specification<Hotel> spec, Pageable pageable) {
-        Page<Hotel> pageHotel = this.hotelRepository.findAll(spec, pageable);
+        Specification<Hotel> isActiveSpec = (root, query, criteriaBuilder) -> criteriaBuilder
+                .equal(root.get("is_active"), true);
+
+        Specification<Hotel> finalSpec = isActiveSpec;
+        if (spec != null) {
+            finalSpec = spec.and(isActiveSpec);
+        }
+        Page<Hotel> pageHotel = this.hotelRepository.findAll(finalSpec, pageable);
         ResultPaginationDTO res = new ResultPaginationDTO();
         Meta meta = new Meta();
         meta.setPage(pageable.getPageNumber() + 1);
@@ -45,6 +57,8 @@ public class HotelService {
     }
 
     public Hotel handleCreateHotel(Hotel hotel) {
+        hotel.set_active(true);
+        hotel.setRate(9);
         return this.hotelRepository.save(hotel);
     }
 
@@ -54,7 +68,6 @@ public class HotelService {
             Hotel newHotel = oldHotel.get();
             newHotel.setName(hotel.getName());
             newHotel.setImage(hotel.getImage());
-            newHotel.setRate(hotel.getRate());
             newHotel.setAddress(hotel.getAddress());
             newHotel.setIntroduction(hotel.getIntroduction());
             newHotel.setUtilities(hotel.getUtilities());
@@ -64,8 +77,13 @@ public class HotelService {
     }
 
     public void handleDeleteHotel(Long id) {
-        this.hotelRepository.deleteById(id);
+        Hotel hotel = this.handleFetchHotelById(id);
+        boolean isRoomAvailable = hotel.getRooms().stream()
+                .anyMatch(room -> room.getAvailable() != RoomStatus.AVAILABLE);
+        if (isRoomAvailable) {
+            throw new IllegalStateException("Không thể xóa khách sạn có phòng đang được đặt");
+        }
+        hotel.set_active(false);
+        this.hotelRepository.save(hotel);
     }
 }
-
-

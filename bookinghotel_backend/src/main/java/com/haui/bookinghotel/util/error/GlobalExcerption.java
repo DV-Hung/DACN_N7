@@ -28,6 +28,7 @@ public class GlobalExcerption {
         res.setMessage("Exception occured .... ");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
+
     // bắt lỗi khi ng dùng k nhập username hoặc pass
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<RestResponse<Object>> validatorError(MethodArgumentNotValidException e) {
@@ -39,7 +40,7 @@ public class GlobalExcerption {
         res.setError(e.getBody().getDetail());
 
         List<String> messages = fieldErrors.stream().map(f -> f.getDefaultMessage()).toList();
-        res.setMessage(messages.size() >1  ? messages : messages.get(0));
+        res.setMessage(messages.size() > 1 ? messages : messages.get(0));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
 
@@ -61,5 +62,12 @@ public class GlobalExcerption {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
 
-
+    @ExceptionHandler(value = Exception.class)
+    public ResponseEntity<RestResponse<Object>> handleAllException(Exception ex) {
+        RestResponse<Object> res = new RestResponse<>();
+        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        res.setError("Exception occurs ...");
+        res.setMessage(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
 }

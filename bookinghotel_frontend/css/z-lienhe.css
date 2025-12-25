@@ -1,0 +1,125 @@
+
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    }
+
+    body {
+    background-image: url("https://cdn-gcs.ngxson.com/voge/2020/03/Screen-Shot-2020-03-05-at-15.37.54.png"); /* Đường dẫn đến ảnh */
+    background-size: cover; /* Đảm bảo ảnh phủ đầy màn hình */
+    background-repeat: no-repeat; /* Không lặp lại ảnh */
+    background-position: center; /* Căn giữa ảnh */
+    font-family: "Roboto", sans-serif;
+    background-color: #ffffff;
+    padding: 20px;
+    }
+
+    .contact-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+    text-align: center;
+    color: #003580;
+    margin-bottom: 20px;
+    }
+
+    p {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #555;
+    }
+
+    .form-group {
+    margin-bottom: 15px;
+    }
+
+    label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    }
+
+    input,
+    textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 16px;
+    }
+
+    textarea {
+    resize: vertical;
+    height: 120px;
+    }
+
+    .submit-btn {
+    background-color: #003580;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 3px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    text-transform: uppercase;
+    }
+
+    .submit-btn:hover {
+    background-color: #003580;
+    }
+    .faq-section {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .faq-section h2 {
+    font-size: 24px;
+    color: #333333;
+    margin-bottom: 20px;
+    text-align: center;
+    }
+
+    .faq-item {
+    margin-bottom: 15px;
+    position: relative;
+    }
+
+    .faq-question {
+    width: 100%;
+    padding: 15px;
+    background-color: #17a2b8;
+    color: #ffffff;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    text-align: left;
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.3s;
+    }
+
+    .faq-question:hover {
+    background-color: #138496;
+    }
+
+    .faq-answer {
+    display: none;
+    padding: 15px;
+    font-size: 16px;
+    color: #333333;
+    background-color: #e9ecef;
+    border-radius: 5px;
+    margin-top: 5px;
+    }

@@ -1,0 +1,149 @@
+
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #c9e6ff, #e6f0ff);
+    margin: 0;
+    padding: 0;
+}
+
+/* ===== THANH NAVBAR ===== */
+.navbar {
+    background-color: #003b88;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 40px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-left h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 15px;
+}
+
+.navbar-right i {
+    margin-right: 5px;
+}
+
+.user-btn {
+    background-color: #0078ff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: 0.2s;
+}
+
+.user-btn:hover {
+    background-color: #005fd1;
+}
+
+/* ===== NỘI DUNG CHÍNH ===== */
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+}
+
+h2 {
+    color: #004a99;
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 26px;
+    text-transform: uppercase;
+}
+
+.booking-container {
+    background-color: #ffffff;
+    width: 95%;
+    max-width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    padding: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    table-layout: fixed;
+}
+
+th,
+td {
+    padding: 12px 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+th {
+    background-color: #0078d7;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tr:hover {
+    background-color: #e6f3ff;
+}
+
+.btn-cancel {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+    background-color: #e60000;
+    transform: scale(1.05);
+}
+
+.footer-note {
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+    margin-top: 25px;
+}
+
+.back-btn {
+    background: transparent;
+    border: 1px solid rgb(15, 205, 244);
+    color: rgb(43, 61, 224);
+    margin-top: 5px;
+    padding: 6px 12px;
+    margin-right: 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}

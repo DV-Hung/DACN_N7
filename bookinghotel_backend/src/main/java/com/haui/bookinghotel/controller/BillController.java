@@ -13,6 +13,9 @@ import com.haui.bookinghotel.util.constant.RoomStatus;
 import com.haui.bookinghotel.util.error.IdInvalidException;
 import com.turkraft.springfilter.boot.Filter;
 import jakarta.validation.Valid;
+
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -48,9 +51,22 @@ public class BillController {
         return ResponseEntity.status(HttpStatus.OK).body(bill);
     }
 
+    @GetMapping("/bills/user/{id}")
+    @ApiMessage("fetch a bill by user id")
+    public ResponseEntity<List<BillResponse>> getBillByUserId(@PathVariable("id") Long userId)
+            throws IdInvalidException {
+        boolean isValidId = this.userService.isIdExist(userId);
+        if (!isValidId) {
+            throw new IdInvalidException("User is not exist");
+        }
+        List<BillResponse> bill = this.billService.handleFetchBillByUserId(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(bill);
+    }
+
     @PostMapping("/bills")
     @ApiMessage("create a bill")
-    public ResponseEntity<BillResponse> createNewBill(@Valid @RequestBody BillRequest reqBill) throws IdInvalidException {
+    public ResponseEntity<BillResponse> createNewBill(@Valid @RequestBody BillRequest reqBill)
+            throws IdInvalidException {
         boolean isValidUser = this.userService.isIdExist(reqBill.getUser_id());
         if (!isValidUser) {
             throw new IdInvalidException("User is not exist");
@@ -60,7 +76,7 @@ public class BillController {
             throw new IdInvalidException("Room is not exist");
         }
         Room room = this.roomService.handleFetchRoomById(reqBill.getRoom_id());
-        if(room.getAvailable() != RoomStatus.AVAILABLE){
+        if (room.getAvailable() != RoomStatus.AVAILABLE) {
             throw new IdInvalidException("This room is booked");
         }
 
@@ -68,6 +84,21 @@ public class BillController {
         return ResponseEntity.status(HttpStatus.CREATED).body(this.billService.covertToResponse(newBill));
     }
 
+    @GetMapping("/bills/count")
+    public ResponseEntity<Integer> fetchQuantity() {
+        int quantity = this.billService.handleFetchQuantity();
+        return ResponseEntity.status(HttpStatus.OK).body(quantity);
+    }
+
+    @DeleteMapping("/bills/{id}")
+    @ApiMessage("delete bill")
+    public ResponseEntity<Bill> deleteBill(@PathVariable("id") Long id) throws IdInvalidException {
+        boolean isValidId = this.billService.isIdExist(id);
+        if (!isValidId) {
+            throw new IdInvalidException("Hotel is not exist");
+        }
+        this.billService.handleDeleteBill(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+    }
+
 }
-
-

@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin AncientBooking</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+  <link rel="stylesheet" href="/css/Admin_Phong.css" />
+  <script src="/js/utils.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+</head>
+
+<body>
+  <div class="sidebar">
+    <h2 class="text-center mb-4" style="font-size: 35px">
+      Admin <br />AncientBooking
+    </h2>
+    <img src="/image/1admin.png" alt="Profile" class="rounded-circle mx-auto d-block mb-4" width="100" />
+    <p class="text-center">AncientBooking</p>
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link" href="admin_hotel.html" onclick="logout()" style="font-size: 95%">
+          <i class="fas fa-hotel"></i>Quản lý khách sạn<i class="fas fa-chevron-down-o"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="login.html" onclick="logout()" style="font-size: 95%">
+          <i class="fas fa-sign-out-alt"></i>Đăng xuất<i class="fas fa-chevron-down-o"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <div class="content">
+    <nav class="navbar navbar-expand navbar-light bg-light">
+      <button id="sidebarToggle" class="btn btn-outline-secondary mr-2" title="Toggle Sidebar">
+        <i class="fas fa-bars"></i>
+      </button>
+      <a class="navbar-brand" href="admin.html">Home</a>
+      <a class="navbar-brand" href="home.html">Website</a>
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="#"><i class="fas fa-comments"></i><span class="badge badge-danger">3</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"><i class="fas fa-bell"></i><span class="badge badge-warning">15</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"><i class="fas fa-th-large"></i></a>
+        </li>
+      </ul>
+    </nav>
+    <body2>
+      <h2>Danh sách phòng</h2>
+      <div class="top-bar">
+        <button class="add-btn" onclick="openModal()">
+          <i class="fas fa-plus"></i>Thêm phòng
+        </button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Mã phòng</th>
+            <th>Mã khách sạn</th>
+            <th>Loại phòng</th>
+            <th>Hình ảnh</th>
+            <th>Số người</th>
+            <th>Giá phòng (VND)</th>
+            <th>Trạng thái</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody id="roomTable">
+          </tr>
+        </tbody>
+      </table>
+      <div id="roomPagination" style="display:flex;gap:8px;align-items:center;justify-content:center;margin-top:15px">
+      </div>
+      <div class="modal" id="addModal">
+        <div class="modal-content">
+          <button class="close-btn" onclick="closeModal()">&times;</button>
+          <h3 id="modalTitle">Thêm phòng</h3>
+          <div class="form-row">
+            <select id="loaiPhong">
+              <option value="" disabled selected>Chọn loại phòng</option>
+              <option value="SINGLE">Single</option>
+              <option value="DOUBLE">Double</option>
+              <option value="TWIN">Twin</option>
+              <option value="FAMILY">Family</option>
+            </select>
+            <input type="number" placeholder="Nhập số người" id="soNguoi" min="1" />
+          </div>
+          <div class="form-row">
+            <input type="number" placeholder="Nhập giá phòng (VND)" id="giaPhong" min="0" />
+            <select id="trangThai">
+              <option value="AVAILABLE">Trống</option>
+              <option value="BOOKED">Đã đặt</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Thêm hình ảnh:</label>
+            <div>
+              <input type="file" id="hinhAnh" multiple accept="image/*" />
+              <div class="preview" id="preview"></div>
+            </div>
+          </div>
+          <button class="btn-submit" id="submitBtn" onclick="handleSubmit()">
+            Thêm
+          </button>
+        </div>
+      </div>
+      <script>
+        const apiUrl = "http://localhost:8080/api/v1/rooms";
+        const storageBase = "http://localhost:8080/storage";
+
+        let imageUrls = [];
+        let isEditMode = false;
+        let editRoomData = null;
+
+        let currentRoomPage = 1;
+        let roomPageSize = 20;
+
+        // --- Load danh sách phòng với phân trang ---
+        async function loadRooms(page = 1, pageSize = roomPageSize) {
+          try {
+            const selectedHotelId = sessionStorage.getItem("selectedHotelId");
+            if (!selectedHotelId) {
+              alert("Vui lòng chọn khách sạn!");
+              return;
+            }
+
+            currentRoomPage = page;
+            roomPageSize = pageSize;
+
+            // Convert to 0-based page for backend (Spring Data uses 0-based pagination)
+            const backendPage = page - 1;
+            const res = await apiCall(`${apiUrl}/hotels/${selectedHotelId}?page=${backendPage}&size=${pageSize}`);
+            if (!res) return;
+
+            const result = await res.json();
+            // Lấy meta từ result (đã parse JSON)
+            const meta = result.data?.meta || { page: 1, pageSize: pageSize, pages: 1, total: 0 };
+            const rooms = result.data?.result || [];
+
+            const table = document.getElementById("roomTable");
+            table.innerHTML = "";
+
+            for (const room of rooms) {
+              const row = table.insertRow();
+
+              let imgHtml = "";
+              let folderForDisplay = "phong"; // default folder
+              if (room.roomImage) {
+                let filename = room.roomImage;
+                // extract filename and folder from various formats
+                if (filename.includes("/")) {
+                  const parts = filename.split("/");
+                  if (parts.includes("storage")) {
+                    const storageIdx = parts.indexOf("storage");
+                    if (storageIdx < parts.length - 2) {
+                      folderForDisplay = parts[storageIdx + 1];
+                      filename = parts[parts.length - 1];
+                    }
+                  } else {
+                    filename = parts[parts.length - 1];
+                  }
+                }
+                const imgSrc = `${storageBase}/${folderForDisplay}/${filename}`;
+
+                imgHtml = `<img src="${imgSrc}" alt="no_image" />`;
+              }
+
+              // Map room type to display label
+              let roomTypeDisplay = room.roomType || '';
+              switch (room.roomType?.toUpperCase()) {
+                case 'SINGLE':
+                  roomTypeDisplay = '1 Giường đơn';
+                  break;
+                case 'DOUBLE':
+                  roomTypeDisplay = '1 Giường đôi';
+                  break;
+                case 'TWIN':
+                  roomTypeDisplay = '2 Giường đơn';
+                  break;
+                case 'FAMILY':
+                  roomTypeDisplay = 'Gia đình';
+                  break;
+              }
+
+              row.innerHTML = `
+                <td>${room.id}</td>
+                <td>${selectedHotelId || ''}</td>
+                <td>${roomTypeDisplay}</td>
+                <td>${imgHtml}</td>
+                <td>${room.capacity || 0}</td>
+                <td>${room.price ? parseInt(room.price).toLocaleString() : 0}</td>
+                <td style="color: ${room.available === 'BOOKED' ? 'red' : 'green'}">${room.available === 'AVAILABLE' ? 'Trống' : 'Đã thuê'}</td>
+                <td class="action-btn">
+                  <button class="edit-btn"><i class="fas fa-edit"></i> Sửa</button>
+                  <button class="delete-btn"><i class="fas fa-trash"></i> Xóa</button>
+                </td>
+              `;
+
+              const editBtn = row.querySelector(".edit-btn");
+              editBtn.addEventListener("click", () => editRoom(room));
+
+              const deleteBtn = row.querySelector(".delete-btn");
+              deleteBtn.addEventListener("click", () => deleteRoom(room.id));
+            }
+
+            renderRoomPagination(meta);
+          } catch (err) {
+            console.error("Lỗi load phòng:", err);
+            alert("Không thể tải danh sách phòng. Vui lòng kiểm tra console log.");
+          }
+        }
+
+        // Hàm wrapper để gọi renderPagination từ utils.js
+        function renderRoomPagination(meta) {
+          if (typeof renderPagination === 'function') {
+            renderPagination('roomPagination', meta, loadRooms);
+          } else {
+            console.warn("Hàm renderPagination chưa được load từ utils.js");
+          }
+        }
+
+        // --- Mở modal ---
+        function openModal() {
+          imageUrls = [];
+          isEditMode = false;
+          editRoomData = null;
+
+          document.getElementById("addModal").style.display = "flex";
+          document.getElementById("modalTitle").textContent = "Thêm phòng";
+          document.getElementById("submitBtn").textContent = "Thêm";
+
+          // Reset all fields
+          document.getElementById("loaiPhong").value = "SINGLE";
+          document.getElementById("soNguoi").value = "";
+          document.getElementById("giaPhong").value = "";
+          document.getElementById("trangThai").value = "AVAILABLE";
+          document.getElementById("hinhAnh").value = "";
+          document.getElementById("preview").innerHTML = "";
+        }
+
+        // --- Đóng modal ---
+        function closeModal() {
+          document.getElementById("addModal").style.display = "none";
+          document.getElementById("preview").innerHTML = "";
+          document.getElementById("hinhAnh").value = "";
+          imageUrls = [];
+        }
+
+        // --- Upload hình ảnh ---
+        document.getElementById("hinhAnh").addEventListener("change", async function (event) {
+          const preview = document.getElementById("preview");
+          preview.innerHTML = "";
+          imageUrls = [];
+
+          const uploadEndpoint = "http://localhost:8080/api/v1/files";
+          const folderName = "phong";
+          const token = localStorage.getItem("access_token");
+
+          const files = Array.from(event.target.files || []);
+          for (const file of files) {
+            try {
+              const form = new FormData();
+              form.append("file", file);
+              form.append("folder", folderName);
+
+              const headers = {};
+              if (token) {
+                headers["Authorization"] = `Bearer ${token}`;
+              }
+
+              const resp = await fetch(uploadEndpoint, {
+                method: "POST",
+                headers: headers,
+                body: form,
+              });
+
+              if (!resp.ok) {
+                console.error("Upload failed:", resp.statusText);
+                alert("Không thể upload ảnh. Xin thử lại.");
+                continue;
+              }
+
+              const data = await resp.json();
+              const fileName = data.data?.fileName || "";
+              const publicUrl = `${storageBase}/${folderName}/${fileName}`;
+
+              const img = document.createElement("img");
+              img.src = publicUrl;
+              img.alt = fileName;
+              preview.appendChild(img);
+
+              imageUrls.push(fileName);
+            } catch (e) {
+              console.error("Error uploading file", e);
+              alert("Lỗi khi upload ảnh. Kiểm tra console để biết chi tiết.");
+            }
+          }
+        });
+
+        // --- Sửa phòng ---
+        function editRoom(room) {
+          isEditMode = true;
+          editRoomData = room;
+
+          document.getElementById("addModal").style.display = "flex";
+          document.getElementById("modalTitle").textContent = "Sửa phòng";
+          document.getElementById("submitBtn").textContent = "Lưu";
+
+          document.getElementById("loaiPhong").value = room.roomType || "SINGLE";
+          document.getElementById("soNguoi").value = room.capacity || "";
+          document.getElementById("giaPhong").value = room.price || "";
+          document.getElementById("trangThai").value = room.available || "AVAILABLE";
+          document.getElementById("hinhAnh").value = "";
+
+          // Load image preview if exists
+          if (room.roomImage) {
+            let filename = room.roomImage;
+            let folderName = "phong";
+            if (filename.includes("/")) {
+              const parts = filename.split("/");
+              if (parts.includes("storage")) {
+                const storageIdx = parts.indexOf("storage");
+                if (storageIdx < parts.length - 2) {
+                  folderName = parts[storageIdx + 1];
+                  filename = parts[parts.length - 1];
+                }
+              } else {
+                filename = parts[parts.length - 1];
+              }
+            }
+            const previewSrc = `${storageBase}/${folderName}/${filename}`;
+            document.getElementById("preview").innerHTML = `<img src="${previewSrc}" alt="${room.roomType}" />`;
+            imageUrls = [filename];
+          } else {
+            document.getElementById("preview").innerHTML = "";
+            imageUrls = [];
+          }
+        }
+
+        // --- Thêm / Cập nhật phòng ---
+        async function handleSubmit() {
+          const loaiPhong = document.getElementById("loaiPhong").value.trim();
+          const soNguoi = document.getElementById("soNguoi").value.trim();
+          const giaPhong = document.getElementById("giaPhong").value.trim();
+          const trangThai = document.getElementById("trangThai").value;
+
+          if (!loaiPhong || !soNguoi || !giaPhong) {
+            alert("Vui lòng nhập đầy đủ thông tin bắt buộc!");
+            return;
+          }
+
+          const selectedHotelId = sessionStorage.getItem("selectedHotelId");
+          if (!selectedHotelId) {
+            alert("Vui lòng chọn khách sạn!");
+            return;
+          }
+
+          const roomObj = {
+            roomType: loaiPhong,
+            capacity: parseInt(soNguoi),
+            price: parseFloat(giaPhong),
+            available: trangThai,
+            roomImage: imageUrls[0] || "",
+            hotel_id: parseInt(selectedHotelId)
+          };
+
+          try {
+            if (isEditMode && editRoomData) {
+              roomObj.id = editRoomData.id;
+              await apiCall(`${apiUrl}`, {
+                method: "PUT",
+                body: JSON.stringify(roomObj)
+              });
+              alert("Đã cập nhật phòng!");
+            } else {
+              await apiCall(apiUrl, {
+                method: "POST",
+                body: JSON.stringify(roomObj)
+              });
+              alert("Đã thêm phòng!");
+            }
+            closeModal();
+            loadRooms();
+          } catch (err) {
+            console.error("Lỗi thêm/cập nhật phòng:", err);
+          }
+        }
+
+        // --- Xóa phòng ---
+        async function deleteRoom(roomId) {
+          if (!confirm("Bạn có chắc muốn xóa phòng này?")) return;
+
+          try {
+            const res = await apiCall(`${apiUrl}/${roomId}`, { method: "DELETE" });
+            if (!res) {
+              alert("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại!");
+              return;
+            }
+
+            if (res.status === 204) {
+              alert("Đã xóa phòng!");
+              loadRooms();
+            } else {
+              const result = await res.json();
+              const errorMsg = result.message || "Không thể xóa khách sạn. Vui lòng thử lại!";
+              alert(errorMsg);
+            }
+          } catch (err) {
+            console.error("Lỗi xóa phòng:", err);
+            alert("Lỗi kết nối: " + err.message);
+          }
+        }
+
+        // --- Click ngoài modal để đóng ---
+        window.onclick = function (e) {
+          const modal = document.getElementById("addModal");
+          if (e.target === modal) closeModal();
+        };
+
+        // --- Load ngay khi mở trang ---
+        window.addEventListener('load', () => loadRooms());
+      </script>
+      <script>
+        // Đồng nhất hostname
+        if (window.location.hostname === "localhost") {
+          window.location.replace(
+            window.location.href.replace("localhost", "127.0.0.1")
+          );
+        }
+      </script>
+    </body2>
+    <div class="footer">
+      <p>Copyright © 2014-2021 AdminLTE.io. All rights reserved.</p>
+      <p>Version 3.2.0-rc</p>
+    </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

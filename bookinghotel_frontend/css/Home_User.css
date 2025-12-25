@@ -1,0 +1,1321 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Roboto", sans-serif;
+    background-color: #f0f0f0;
+}
+
+/*header*/
+header {
+    background-color: #003580;
+    padding: 20px;
+    color: white;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo h1 {
+    font-size: 24px;
+}
+
+.options a {
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+}
+
+.options {
+    margin-top: 10px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.options button {
+    background-color: transparent;
+    border: none;
+    color: white;
+    margin: 0;
+    font-size: 23px;
+    cursor: pointer;
+    width: auto;
+    flex: 0 1 auto;
+
+}
+
+.options button:hover {
+    border: 2px solid white;
+    border-radius: 30px / 30px;
+    /* Chiều dài, chiều rộng khác nhau tạo hiệu ứng bầu dục */
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 8px 12px;
+}
+
+.login-section {
+    display: flex;
+    align-items: center;
+    position: relative;
+    /* Để dropdown menu có thể được định vị chính xác */
+}
+
+.main-button {
+    background-color: #007bff;
+    /* Màu nền nút chính */
+    color: white;
+    /* Màu chữ */
+    border: none;
+    /* Không đường viền */
+    padding: 10px 15px;
+    /* Khoảng cách bên trong */
+    border-radius: 5px;
+    /* Bo tròn các góc */
+    display: flex;
+    /* Để căn giữa biểu tượng và văn bản */
+    align-items: center;
+    cursor: pointer;
+    /* Con trỏ chuột khi di chuột qua */
+    transition: background-color 0.3s;
+    /* Hiệu ứng chuyển màu */
+}
+
+.main-button:hover {
+    background-color: #0056b3;
+    /* Màu nền khi di chuột qua */
+}
+
+.dropdown-menu {
+    display: none;
+    /* Ẩn menu ban đầu */
+    position: absolute;
+    /* Để menu nằm phía dưới nút */
+    background-color: white;
+    /* Màu nền của menu */
+    border: 1px solid #ccc;
+    /* Đường viền */
+    border-radius: 5px;
+    /* Bo tròn các góc */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    /* Đổ bóng */
+    z-index: 1000;
+    /* Đảm bảo menu nằm trên các phần tử khác */
+    margin-top: 220px;
+    /* Khoảng cách giữa nút và menu */
+    width: 150px;
+    /* Đặt chiều rộng cố định cho menu */
+}
+
+.dropdown-button {
+    display: block;
+    /* Để các nút trong menu xếp chồng lên nhau */
+    padding: 10px;
+    /* Khoảng cách bên trong */
+    border: none;
+    /* Không đường viền */
+    background-color: transparent;
+    /* Màu nền trong suốt */
+    color: #333;
+    /* Màu chữ */
+    text-align: left;
+    /* Căn trái chữ */
+    border-radius: 5px;
+    /* Bo tròn các góc */
+    cursor: pointer;
+    /* Con trỏ chuột khi di chuột qua */
+    transition: background-color 0.3s, color 0.3s;
+    /* Hiệu ứng chuyển màu */
+}
+
+.dropdown-button:hover {
+    background-color: #f0f0f0;
+    /* Màu nền khi di chuột qua */
+    color: #007bff;
+    /* Thay đổi màu chữ khi di chuột qua */
+}
+
+/* Pagination Styling */
+.form-control-sm {
+    padding: 0.375rem 0.75rem !important;
+    font-size: 0.875rem !important;
+    border-radius: 0.25rem !important;
+    border: 1px solid #6c757d !important;
+    background-color: white !important;
+    color: #333 !important;
+}
+
+.currency-contact {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+
+.currency-contact select {
+    background-color: #003580;
+    border: none;
+    color: white;
+    margin-right: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.currency-contact .contact {
+    color: rgb(255, 255, 255);
+    font-size: 16px;
+    cursor: pointer;
+    margin-right: 10px;
+    display: flex;
+    /* Thay đổi kiểu hiển thị thành flex để căn giữa */
+    align-items: center;
+    /* Căn giữa dọc */
+    width: 80px;
+}
+
+.currency-contact .contact i {
+    margin-right: 5px;
+    /* Thêm khoảng cách giữa biểu tượng và văn bản */
+}
+
+.currency-contact .thongbao {
+    color: rgb(255, 255, 255);
+    font-size: 16px;
+    cursor: pointer;
+    margin-right: 10px;
+    display: flex;
+    /* Thay đổi kiểu hiển thị thành flex để căn giữa */
+    align-items: center;
+    /* Căn giữa dọc */
+    width: 110px;
+}
+
+.currency-contact .thongbao i {
+    margin-right: 5px;
+    /* Thêm khoảng cách giữa biểu tượng và văn bản */
+}
+
+.thongbao a {
+    text-decoration: none;
+    color: aliceblue;
+}
+
+.contact a {
+    text-decoration: none;
+    color: aliceblue;
+}
+
+.thongbao:hover {
+    border: 2px solid white;
+    border-radius: 30px / 30px;
+    /* Chiều dài, chiều rộng khác nhau tạo hiệu ứng bầu dục */
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.contact:hover {
+    border: 2px solid white;
+    border-radius: 30px / 30px;
+    /* Chiều dài, chiều rộng khác nhau tạo hiệu ứng bầu dục */
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/*section*/
+.search-section {
+    background-color: #003580;
+    color: white;
+    text-align: center;
+    padding: 50px 20px;
+    padding-top:20px;
+}
+
+.search-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.search-container h20 {
+    font-size: 50px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.search-container p {
+    font-size: 18px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.search-form {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.search-input,
+.date-input,
+.guest-control,
+.search-btn {
+    padding: 10px;
+    border: none;
+    border-radius: 3px;
+    font-size: 16px;
+}
+
+.search-input {
+    flex: 2;
+}
+
+.date-input {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.guest-control {
+    flex: 1.5;
+    position: relative;
+    margin-right: 10px;
+}
+
+.guest-control input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.search-btn {
+    background-color: #0071c2;
+    color: white;
+    cursor: pointer;
+    flex: 0.5;
+    margin-left: 10px;
+}
+
+.search-btn a {
+    text-decoration: none;
+    color: white;
+}
+
+.search-btn:hover {
+    background-color: #034cc1;
+}
+
+.guests-popup {
+    position: absolute;
+    top: 50px;
+    background-color: white;
+    color: black;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border-radius: 5px;
+    z-index: 1;
+    width: 350px;
+    display: none;
+}
+
+.guests-popup div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.guests-popup button {
+    background-color: #0071c2;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+
+
+.container5 {
+    max-width: 100%;
+    /* Full width */
+    margin: 0 auto;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.popular-destinations5 {
+    padding: 40px 20px;
+}
+
+.popular-destinations5 h2 {
+    margin: 0 0 10px 0;
+    text-align: center;
+    font-size: 30px;
+}
+
+.popular-destinations5 p {
+    text-align: center;
+    margin: 0 0 30px 0;
+}
+
+.destination-grid5 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.destination5 {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.destination5 img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.destination5:hover img {
+    transform: scale(1.05);
+}
+
+.overlay {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
+}
+
+.overlay h3 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    color: white;
+}
+
+.overlay img {
+    width: 20px;
+    height: 14px;
+    margin-left: 5px;
+}
+
+/* Hà Nội and Đà Lạt take up more space on the grid */
+.hanoi,
+.dalat {
+    grid-column: span 3;
+    height: 250px;
+}
+
+/* For larger screens, make the layout three columns initially */
+@media (min-width: 768px) {
+    .destination-grid5 {
+    grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/*footer*/
+.footer {
+    display: flex;
+    justify-content: space-between;
+    background-color: #f2f2f2;
+    padding: 20px;
+}
+
+.footer-section {
+    width: 18%;
+}
+
+.footer-section h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.footer-section ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 8px;
+}
+
+.footer-section ul li a {
+    text-decoration: none;
+    /* Bỏ gạch chân */
+    color: black;
+    /* Màu chữ */
+}
+
+.footer-section ul li a:hover {
+    text-decoration: underline;
+    /* Gạch chân khi hover */
+}
+
+.footer-bottom {
+    text-align: center;
+    padding: 10px;
+    font-size: 12px;
+    background-color: #f2f2f2;
+    text-decoration: none;
+    height: 0;
+    margin-bottom: -5%;
+}
+
+.partners img {
+    width: 80px;
+    margin: 0 10px;
+}
+
+/*nav1*/
+body7 {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+}
+
+body7 h3 {
+    margin: 15px 0;
+    color: #333;
+    text-align: center;
+    font-size: 28px;
+    width: 100%;
+}
+
+body7>p {
+    text-align: center;
+    color: #555;
+    margin: 10px 0 20px 0;
+    width: 100%;
+}
+
+body7 .hotel-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 1300px;
+    overflow: visible;
+    /* cho phép nút nổi trên vùng cuộn */
+    padding: 0 40px;
+    /* chừa chỗ cho nút trái/phải */
+    box-sizing: border-box;
+}
+
+body7 .scroll-btn {
+    background: transparent;
+    /* không nền */
+    border: none;
+    /* không viền */
+    border-radius: 0;
+    /* bỏ bo tròn */
+    color: #0078d7;
+    /* màu icon */
+    font-size: 24px;
+    /* to hơn dễ thấy */
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+    pointer-events: auto;
+    transition: color 0.15s;
+    box-shadow: none;
+    padding: 5px 8px;
+}
+
+body7 .scroll-btn:hover {
+    color: #0056b3;
+    /* đổi màu nhẹ khi hover */
+}
+
+body7 .scroll-left {
+    left: 12px;
+}
+
+body7 .scroll-right {
+    right: 12px;
+}
+
+body7 .hotel-list {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 10px 0;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    /* thấp hơn nút */
+    -webkit-overflow-scrolling: touch;
+}
+
+body7 .hotel-list::-webkit-scrollbar {
+    display: none;
+}
+
+body7 .hotel-card {
+    flex: 0 0 auto;
+    background: #fff;
+    width: 300px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.18s;
+    display: flex;
+    flex-direction: column;
+}
+
+body7 .hotel-card:hover {
+    transform: scale(1.03);
+}
+
+body7 .hotel-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+body7 .hotel-info {
+    padding: 15px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+body7 .hotel-info b {
+    display: block;
+    font-size: 18px;
+    margin-bottom: 6px;
+}
+
+body7 .hotel-info p {
+    margin: 4px 0;
+    font-size: 15px;
+    color: #444;
+}
+
+body7 .hotel-card button {
+    background: #0056b3;
+    color: #fff;
+    border: none;
+    width: 100%;
+    padding: 10px 0;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    margin-top: auto;
+}
+
+body7 .hotel-card button:hover {
+    background: #007bb8;
+}
+
+/* fallback: nếu vẫn che, tăng khoảng chừa bên ngoài */
+@media (max-width: 600px) {
+    .hotel-container {
+    padding: 0 12px;
+    }
+
+    body7 .scroll-left {
+    left: 4px;
+    }
+
+    body7 .scroll-right {
+    right: 4px;
+    }
+}
+
+body1 {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    background: #f5f5f5;
+}
+
+.container1 {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.section1 {
+    margin-bottom: 40px;
+}
+
+.title1 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.subtext1 {
+    color: #555;
+    margin-top: 0px;
+}
+
+.promo1 {
+    border: solid 1px;
+    width: 90%;
+    height: auto;
+    background-color: #f7f7f7;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    align-items: flex-start;
+    /* Căn các phần tử sang trái */
+    gap: 15px;
+    /* Khoảng cách giữa ảnh và văn bản */
+    height: 300px;
+    flex-wrap: wrap;
+    /* Đảm bảo nút xuống dưới văn bản nếu cần */
+    margin-top: 5px;
+}
+
+.promo-text1 {
+    max-width: 70%;
+}
+
+.promo-button1 {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: -50px;
+    /* Điều chỉnh khoảng cách giữa văn bản và nút */
+}
+
+.promo-button1:hover {
+    background-color: #0056e5;
+}
+
+.category1 {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+}
+
+.category-item1 {
+    flex: 1;
+    max-width: 200px;
+    text-align: center;
+}
+
+.category-item1 img {
+    width: 100%;
+    border-radius: 8px;
+}
+
+/*nav2*/
+body2 {
+    font-family: Arial, sans-serif;
+    padding: 40px 20px;
+    background-color: #f5f5f5;
+}
+
+/* Phần bộ lọc (filters1) */
+.filters1 {
+    display: flex;
+    justify-content: center;
+    margin-left: 0;
+    gap: 15px;
+    padding: 10px 20px;
+    margin-top: -70px;
+}
+
+.filters1 button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: 2px solid #007bff;
+    border-radius: 30px;
+    background-color: transparent;
+    font-size: 16px;
+    font-weight: bold;
+    color: #007bff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.filters1 button:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Phần điểm đến (destinations1) */
+.destinations1 {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 20px;
+    padding: 20px;
+    justify-items: center;
+    align-items: start;
+    margin: 0 auto;
+    max-width: 1400px;
+}
+
+.destination-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    max-width: 200px;
+}
+
+.destination-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.destination-card img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.destination-card h3 {
+    font-size: 18px;
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+.destination-card p {
+    font-size: 14px;
+    color: gray;
+}
+
+/*nav3*/
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body3 {
+    padding: 40px 20px;
+    background-color: #f9f9f9;
+}
+
+body3 h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+body3>p {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.section {
+    position: relative;
+    margin-bottom: 40px;
+}
+
+.places-wrapper {
+    width: 100%;
+    max-width: 1100px;
+    overflow: hidden;
+    margin: 0 auto;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #fff;
+}
+
+.places-container {
+    display: flex;
+    transition: transform 1s ease;
+    width: calc(25% * 9);
+    /* Tổng chiều rộng cho 8 ảnh */
+}
+
+.place-card {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 25%;
+    /* Chiều rộng mỗi ảnh */
+    margin-right: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.place-card:last-child {
+    margin-right: 0;
+}
+
+.place-card img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.place-info {
+    padding: 15px;
+}
+
+.place-info h3 {
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+
+.place-info p {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.rating {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #f3f3f3;
+    font-weight: bold;
+    background-color: #0071c2;
+    width: 30px;
+}
+
+.price {
+    margin-top: 10px;
+    font-size: 1rem;
+    color: #d84a05;
+    font-weight: bold;
+}
+
+.place-card:hover {
+    transform: translateY(-5px);
+    transition: transform 0.3s;
+}
+
+.prev,
+.next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    z-index: 1;
+    transition: background-color 0.3s ease, opacity 0.3s ease;
+}
+
+.prev {
+    left: 10px;
+    /* Align with carousel edge */
+}
+
+.next {
+    right: 10px;
+    /* Align with carousel edge */
+}
+
+.prev:hover,
+.next:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.prev:disabled,
+.next:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/*nav4*/
+body4 {
+    padding: 40px 20px;
+    background-color: #f9f9f9;
+}
+
+body4 h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    margin-top: 0;
+}
+
+h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    margin-left: 190px;
+
+}
+
+.section4 {
+    position: relative;
+    margin-bottom: 40px;
+}
+
+.places-wrapper4 {
+    width: 100%;
+    max-width: 1100px;
+    overflow: hidden;
+    margin: 0 auto;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #fff;
+
+}
+
+.places-container4 {
+    display: flex;
+    transition: transform 1s ease;
+    width: calc(25% * 8);
+    /* Tổng chiều rộng cho 5 ảnh */
+}
+
+.place-card4 {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 25%;
+    /* Chiều rộng mỗi ảnh */
+    margin-right: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.place-card4:last-child {
+    margin-right: 0;
+}
+
+.place-card4 img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.place-info4 {
+    padding: 15px;
+}
+
+.place-info4 h3 {
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+
+.place-info4 p {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.rating4 {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #ffffff;
+    font-weight: bold;
+    border: solid 1px;
+    background-color: #0278ff;
+    width: 30px;
+}
+
+.price4 {
+    margin-top: 10px;
+    font-size: 1rem;
+    color: #d84a05;
+    font-weight: bold;
+}
+
+.place-card4:hover {
+    transform: translateY(-5px);
+    transition: transform 0.3s;
+}
+
+.prev4,
+.next4 {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    z-index: 1;
+    transition: background-color 0.3s ease, opacity 0.3s ease;
+}
+
+.prev4 {
+    left: 10px;
+    /* Align with carousel edge */
+}
+
+.next4 {
+    right: 10px;
+    /* Align with carousel edge */
+}
+
+.prev4:hover,
+.next4:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.prev4:disabled,
+.next4:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+
+/*nav6*/
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+
+}
+
+.container6 {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+h26 {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.tab-buttons6 {
+    display: flex;
+    margin-top: 10px;
+}
+
+.tab6 {
+    border: 1px solid #007bff;
+    background: transparent;
+    color: #007bff;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+    margin: 5px;
+}
+
+.tab6.active6 {
+    background-color: #007bff;
+    color: white;
+    margin-left: -5px;
+}
+
+.content6 {
+    display: none;
+    margin-top: 30px;
+}
+
+.content6.active6 {
+    display: block;
+}
+
+.hotel-list6 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.hotel-list6 div a {
+    text-decoration: none;
+    color: black;
+}
+
+.hotel-list6 div {
+    width: 45%;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.show-more6 {
+    display: block;
+    margin-top: 20px;
+    text-align: center;
+    color: #007bff;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.circle-left {
+    background-color: #ffd700;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    position: absolute;
+    left: -10px;
+}
+
+.circle-left1 {
+    background-color: #ffd700;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    position: absolute;
+    top: -5px;
+    left: 570px;
+}
+
+.circle-left2 {
+    background-color: #0056e5;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    position: absolute;
+    top: 200px;
+    left: 1150px;
+}
+
+.text-container {
+    background-color: #0056e5;
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    flex: 1;
+    margin-right: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+
+}
+
+.text-container h2 {
+    font-size: 2rem;
+    line-height: 1.2;
+    margin-bottom: 10px;
+    margin-left: -5px;
+}
+
+.static-text {
+    display: inline;
+}
+
+.rotating-wrapper {
+    display: inline-block;
+    height: 1.2em;
+    overflow: hidden;
+    vertical-align: bottom;
+}
+
+.rotating-text {
+    display: flex;
+    flex-direction: column;
+    animation: slide 5s infinite;
+}
+
+@keyframes slide {
+    0% {
+    transform: translateY(0);
+    }
+
+    0% {
+    transform: translateY(-100%);
+    }
+
+    100% {
+    transform: translateY(-200%);
+    }
+
+    100% {
+    transform: translateY(0);
+    }
+}
+
+.rotating-text div {
+    height: 1.2em;
+}
+
+button {
+    background-color: white;
+    color: #0056e5;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.illustration {
+    flex: 1;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.chair {
+    width: 100px;
+    height: 150px;
+    background-color: #ffd700;
+    border-radius: 10px;
+    position: relative;
+}
+
+.dropdown-menu {
+    display: none;
+    /* Ẩn mặc định */
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    right: 0;
+
+    z-index: 1000;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown-menu.show {
+    display: block;
+    /* Hiển thị khi toggle */
+}
+
+.dropdown-button {
+    display: block;
+    width: 100%;
+    padding: 5px 10px;
+    margin-bottom: 5px;
+    background-color: #f1f1f1;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    border-radius: 4px;
+}
+
+.dropdown-button:hover {
+    background-color: #ddd;
+}

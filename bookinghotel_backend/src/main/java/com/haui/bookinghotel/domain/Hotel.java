@@ -24,7 +24,7 @@ public class Hotel {
     private String introduction;
     @Column(columnDefinition = "MEDIUMTEXT")
     private String utilities;
-
+    private boolean is_active;
     @OneToMany(mappedBy = "hotel", fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<Review> reviews;

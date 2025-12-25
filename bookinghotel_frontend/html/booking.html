@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Phiếu Đặt Phòng</title>
+  <link rel="stylesheet" href="/css/PhieuDatPhong.css" />
+
+</head>
+
+<body>
+  <div class="form-container">
+    <h1>Phiếu Đặt Phòng</h1>
+
+    <label for="room-code">Mã phòng:</label>
+    <input type="text" id="room-code" readonly />
+
+    <label for="full-name">Họ tên:</label>
+    <input type="text" id="full-name" required />
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" readonly />
+
+    <label for="phone">Số điện thoại:</label>
+    <input type="tel" id="phone" pattern="[0-9]{10}" maxlength="10" placeholder="Nhập 10 số" />
+
+    <label for="check-in">Ngày nhận:</label>
+    <input type="date" id="check-in" required />
+
+    <label for="check-out">Ngày trả:</label>
+    <input type="date" id="check-out" required />
+
+    <label for="total-cost">Tổng chi phí:</label>
+    <input type="text" id="total-cost" readonly />
+
+    <button type="submit" id="submitBtn">Xác nhận</button>
+  </div>
+
+  <script src="/js/utils.js"></script>
+  <script>
+    const billApiUrl = "http://localhost:8080/api/v1/bills";
+    const roomApiUrl = "http://localhost:8080/api/v1/rooms";
+
+    // Lấy thông tin phòng từ URL
+    const params = new URLSearchParams(window.location.search);
+    const roomId = params.get("maPhong");
+
+    // Lấy thông tin người dùng từ localStorage
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+    // Gán dữ liệu tự động
+    document.getElementById("room-code").value = roomId || "";
+    document.getElementById("email").value = user.email || "";
+
+
+    let roomPrice = 0;
+
+    // Lấy giá phòng để tính
+    async function loadRoomPrice() {
+      if (!roomId) return 0;
+
+      try {
+        const res = await apiCall(`${roomApiUrl}/${roomId}`);
+        if (!res) return 0;
+
+        const data = await res.json();
+        const room = data.data || {};
+        roomPrice = room.price || 0;
+
+        // Tính tiền ngay sau khi load xong giá
+        tinhTien();
+
+        return roomPrice;
+      } catch (err) {
+        console.error("Lỗi load giá phòng:", err);
+        return 0;
+      }
+    }
+
+    // Thiết lập ngày hiện tại để làm min cho check-in
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+
+    // Gán min cho check-in
+    document.getElementById("check-in").setAttribute("min", todayStr);
+
+    // Nếu muốn check-out cũng không được chọn trước check-in
+    document.getElementById("check-in").addEventListener("change", () => {
+      const checkInValue = document.getElementById("check-in").value;
+      document.getElementById("check-out").setAttribute("min", checkInValue);
+      // Tính tiền khi chọn ngày nhận xong
+      tinhTien();
+    });
+
+    // Tính tổng chi phí khi thay đổi ngày
+    function tinhTien() {
+      const checkIn = document.getElementById("check-in").value;
+      const checkOut = document.getElementById("check-out").value;
+
+      // Nếu chưa chọn cả 2 ngày thì xóa giá tiền
+      if (!checkIn || !checkOut) {
+        document.getElementById("total-cost").value = "";
+        return;
+      }
+
+      const ngay1 = new Date(checkIn);
+      const ngay2 = new Date(checkOut);
+
+      let soNgay = (ngay2 - ngay1) / (1000 * 60 * 60 * 24);
+      if (soNgay <= 0) soNgay = 1;
+
+      const tong = soNgay * roomPrice;
+
+      document.getElementById("total-cost").value =
+        tong.toLocaleString("vi-VN") + " đ";
+    }
+
+    // Gắn sự kiện tính tiền tự động khi chọn ngày
+    document.getElementById("check-in").addEventListener("change", tinhTien);
+    document.getElementById("check-out").addEventListener("change", tinhTien);
+
+    // Load room price on page load
+    window.addEventListener("load", () => {
+      loadRoomPrice();
+    });
+
+    // Xử lý gửi form
+    document
+      .getElementById("submitBtn")
+      .addEventListener("click", async (e) => {
+        e.preventDefault();
+
+        const fullName = document.getElementById("full-name").value.trim();
+        const phoneNumber = document.getElementById("phone").value.trim();
+        const checkIn = document.getElementById("check-in").value;
+        const checkOut = document.getElementById("check-out").value;
+
+        if (!fullName || !phoneNumber || !checkIn || !checkOut) {
+          alert("Vui lòng nhập đầy đủ thông tin!");
+          return;
+        }
+
+        // Kiểm tra số điện thoại phải là 10 số
+        if (!/^\d{10}$/.test(phoneNumber)) {
+          alert("Số điện thoại phải có đúng 10 chữ số!");
+          return;
+        }
+
+        if (!user.id) {
+          alert("Không xác định được thông tin người dùng!");
+          return;
+        }
+
+        // Tạo datetime Instant (ISO 8601 format) - 9h sáng
+        const checkInDate = new Date(checkIn + "T09:00:00").toISOString();
+        const checkOutDate = new Date(checkOut + "T09:00:00").toISOString();
+
+        // Tính tổng chi phí = số ngày × giá phòng
+        const ngay1 = new Date(checkIn);
+        const ngay2 = new Date(checkOut);
+        let soNgay = (ngay2 - ngay1) / (1000 * 60 * 60 * 24);
+        if (soNgay <= 0) soNgay = 1;
+        const totalCost = soNgay * roomPrice;
+
+        // Tạo object gửi lên server - khớp với BillRequest
+        const billObj = {
+          username: user.email || "",
+          email: fullName || "",
+          phoneNumber: user.phoneNumber || phoneNumber || "",
+          checkInDate: checkInDate,
+          checkOutDate: checkOutDate,
+          totalCost: totalCost,
+          room_id: parseInt(roomId),
+          user_id: user.id,
+        };
+
+        try {
+          const res = await apiCall(billApiUrl, {
+            method: "POST",
+            body: JSON.stringify(billObj),
+          });
+
+          if (!res || !res.ok) {
+            throw new Error("Lỗi khi gửi phiếu đặt phòng");
+          }
+
+          alert("Đặt phòng thành công!");
+          window.location.href = "home.html";
+        } catch (err) {
+          console.error(err);
+          alert("Không thể kết nối server hoặc dữ liệu không hợp lệ!");
+        }
+      });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tìm chỗ nghỉ tiếp theo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="/css/TimKiem.css" />
+  <!-- Thêm Font Awesome -->
+
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <div class="logo">
+        <h1 style="font-size: 30px; "><a href="home.html"
+            style="text-decoration: none; color: white;">AncientBooking.com</a></h1>
+      </div>
+      <div class="currency-contact">
+        <select>
+          <option value="usd">USD</option>
+          <option value="vnd">VND</option>
+        </select>
+        <div class="thongbao">
+          <i class="fa fa-bell"></i>
+          <!-- Biểu tượng thông báo -->
+          <a href="thongbao.html"></i>Thông báo</a>
+        </div>
+        <div class="contact">
+          <i class="fas fa-envelope"></i>
+          <!-- Biểu tượng liên hệ -->
+          <a href="z-lienhe.html">Liên hệ</a>
+        </div>
+      </div>
+      <div class="login-section">
+        <button class="main-button" onclick="toggleMenu()">
+          <i class="fa fa-user-circle"></i>
+          <p id="buttonusername">Tên người dùng</p>
+        </button>
+        <div id="dropdownMenu" class="dropdown-menu">
+          <button class="dropdown-button" onclick="viewAccountDetails()">Chi tiết tài khoản</button>
+          <button class="dropdown-button" onclick="logoutUser()">
+            Đăng xuất</button>
+        </div>
+      </div>
+    </div>
+    </div>
+    <div class="options">
+      <button onclick="location.href='https:/vietnam.travel/';"><i class="fa fa-calendar-check"
+          style="font-size: 30px;"></i> Sự kiện</button>
+      <button onclick="location.href='https:/www.vietjetair.com/vi';"><i class="fa fa-plane"
+          style="font-size: 30px;"></i> Chuyến bay</button>
+      <button onclick="location.href='https:/taxigo.vn/';"><i class="fa fa-car" style="font-size: 30px;"></i>Thuê
+        xe</button>
+      <button onclick="location.href='booked.html';"><i class="fa fa-shopping-cart" style="font-size: 30px;"></i>Quản lý
+        đặt phòng</button>
+    </div>
+  </header>
+  <script>
+    // --- Lấy thông tin user từ localStorage ---
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    // --- Hiển thị tên tài khoản ---
+    const usernameButton = document.getElementById("buttonusername");
+    if (user && user.tenTaiKhoan) {
+      usernameButton.textContent = user.tenTaiKhoan;
+    } else {
+      usernameButton.textContent = "Khách"; // nếu chưa login
+    }
+
+    // --- Toggle menu dropdown ---
+    function toggleMenu() {
+      const dropdown = document.getElementById("dropdownMenu");
+      dropdown.classList.toggle("show");
+    }
+
+    // --- Logout user ---
+    function logoutUser() {
+      localStorage.removeItem("user"); // Xóa thông tin đăng nhập
+      window.location.href = "login.html"; // Quay về trang đăng nhập
+    }
+
+    // --- Xem chi tiết tài khoản ---
+    function viewAccountDetails() {
+      if (user) {
+        alert(
+          `Tên tài khoản: ${user.tenTaiKhoan}\n` +
+          `Email: ${user.email}\n` +
+          `SĐT: ${user.sdt}\n` +
+          `Mật khẩu: ${user.matKhau}\n` +
+          `Ngày tạo: ${new Date(user.ngayTao).toLocaleString()}`
+        );
+      } else {
+        alert("Chưa đăng nhập!");
+      }
+    }
+
+
+    // --- Quay lại trang trước ---
+    function QuayLai() {
+      window.history.back();
+    }
+
+    // --- Click ngoài dropdown để đóng menu ---
+    window.onclick = function (event) {
+      const dropdown = document.getElementById("dropdownMenu");
+      const button = document.querySelector(".login-section button");
+      if (!button.contains(event.target)) {
+        dropdown.classList.remove("show");
+      }
+    };
+  </script>
+
+  <h1 style="margin-left: 0; margin-top: 20px; background: #f0f0f0; text-align: center; font-size: 28px; color: #333;">
+    Kết quả tìm kiếm</h1>
+  <body2>
+    <div id="searchResults">
+      <!-- JS sẽ render khách sạn ở đây (3 columns grid) -->
+    </div>
+    <div id="searchPagination" style="display:flex;gap:8px;align-items:center;justify-content:center;margin-top:15px">
+    </div>
+
+    <script src="/js/utils.js"></script>
+    <script>
+      const apiUrl = "http://localhost:8080/api/v1/hotels";
+      let currentSearchPage = 1;
+      let searchPageSize = 20;
+
+      async function loadSearchResults(page = 1, pageSize = 20) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const diaChi = urlParams.get("diaChi");
+        const soNguoi = parseInt(urlParams.get("soNguoi"));
+
+        if (!diaChi || !soNguoi) return;
+
+        try {
+          currentSearchPage = page;
+          searchPageSize = pageSize;
+
+          // Convert to 0-based page for backend
+          const backendPage = page - 1;
+
+          // Build filter query for address
+          const filterQuery = `address~'${diaChi}'`;
+          const res = await apiCall(`${apiUrl}?filter=${encodeURIComponent(filterQuery)}&page=${backendPage}&size=${pageSize}`);
+          if (!res) return;
+
+          const result = await res.json();
+          const hotels = result.data?.result || [];
+          const meta = result.data?.meta || { page: 1, pageSize: pageSize, pages: 1, total: 0 };
+          const resultsDiv = document.getElementById("searchResults");
+          resultsDiv.innerHTML = "";
+
+          if (hotels.length === 0) {
+            resultsDiv.innerHTML = "<p>Không tìm thấy khách sạn nào.</p>";
+            renderSearchPagination(meta);
+            return;
+          }
+
+          for (const h of hotels) {
+            // Lấy ngày từ URL
+            const startDate = new Date(urlParams.get("startDate"));
+            const endDate = new Date(urlParams.get("endDate"));
+            const soNgay =
+              Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) || 1;
+
+            // ---- ẢNH ----
+            const imgSrc = h.image
+              ? `http://localhost:8080/storage/khachsan/${h.image}`
+              : "image/placeholder.jpg";
+
+            // ---- RENDER UI (Simplified grid card) ----
+            const hotelCard = document.createElement("div");
+            hotelCard.className = "hotel-card";
+
+            hotelCard.innerHTML = `
+              <div class="hotel-image">
+                <img src="${imgSrc}" alt="${h.name}" onerror="this.src='image/placeholder.jpg'">
+              </div>
+              <div class="hotel-content">
+                <div class="hotel-header">
+                  <h2 class="hotel-title">${h.name}</h2>
+                  <div class="hotel-rating">${(h.rate || 0).toFixed(1)}/10</div>
+                </div>
+                <div class="hotel-info"><strong>Địa chỉ:</strong> ${h.address}</div>
+                <div class="price-section">
+                  <div class="room-price">${h.price ? h.price.toLocaleString() + ' VND' : 'Liên hệ'}</div>
+                  <button class="btn-detail" onclick="window.location.href='detail.html?maKS=${h.id}'">
+                    Xem chi tiết
+                  </button>
+                </div>
+              </div>
+            `;
+
+            resultsDiv.appendChild(hotelCard);
+          }
+
+          renderSearchPagination(meta);
+
+        } catch (err) {
+          console.error("Lỗi tìm khách sạn:", err);
+          alert("Không thể tìm khách sạn!");
+        }
+      }
+
+      function renderSearchPagination(meta) {
+        if (typeof renderPagination === 'function') {
+          renderPagination('searchPagination', meta, loadSearchResults);
+        }
+      }
+
+      window.addEventListener('load', () => loadSearchResults());
+    </script>
+  </body2>
+
+</html>

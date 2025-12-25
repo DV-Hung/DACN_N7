@@ -6,6 +6,8 @@ import lombok.Setter;
 
 import java.time.Instant;
 
+import com.haui.bookinghotel.util.constant.RoomType;
+
 @Getter
 @Setter
 public class BillResponse {
@@ -18,4 +20,7 @@ public class BillResponse {
     private String phoneNumber;
     private Long user_id;
     private Long room_id;
+    private String address_hotel;
+    private String name_hotel;
+    private RoomType roomType;
 }

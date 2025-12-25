@@ -11,22 +11,22 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
+
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    public ResultPaginationDTO handleFetchAllUsers(Specification<User> spec, Pageable pageable){
-        Page<User> pageUser = this.userRepository.findAll(spec,pageable);
+    public ResultPaginationDTO handleFetchAllUsers(Specification<User> spec, Pageable pageable) {
+        Page<User> pageUser = this.userRepository.findAll(spec, pageable);
         ResultPaginationDTO res = new ResultPaginationDTO();
-        Meta meta= new Meta();
-        meta.setPage(pageable.getPageNumber() +1);
+        Meta meta = new Meta();
+        meta.setPage(pageable.getPageNumber() + 1);
         meta.setPageSize(pageable.getPageSize());
         meta.setPages(pageUser.getTotalPages());
         meta.setTotal(pageUser.getTotalElements());
@@ -34,24 +34,25 @@ public class UserService {
         res.setMeta(meta);
 
         List<ResUserDTO> users = pageUser.getContent().stream()
-                            .map(item -> this.convertToResUserDTO(item))
-                            .toList();
+                .map(item -> this.convertToResUserDTO(item))
+                .toList();
         res.setResult(users);
         return res;
     }
-    public User handleFetchUserById(Long id){
+
+    public User handleFetchUserById(Long id) {
         Optional<User> user = this.userRepository.findById(id);
         return user.orElse(null);
     }
 
-    public User handleCreateUser(User user){
+    public User handleCreateUser(User user) {
         user.setRole(Role.USER);
         return this.userRepository.save(user);
     }
 
-    public User handleUpdateUser(User user){
+    public User handleUpdateUser(User user) {
         Optional<User> oldUser = this.userRepository.findById(user.getId());
-        if(oldUser.isPresent()){
+        if (oldUser.isPresent()) {
             User newUser = oldUser.get();
             newUser.setUsername(user.getUsername());
             newUser.setPassword(user.getPassword());
@@ -62,23 +63,23 @@ public class UserService {
         return null;
     }
 
-    public void handleDeleteUser(Long id){
+    public void handleDeleteUser(Long id) {
         this.userRepository.deleteById(id);
     }
 
-    public User handleFindUserByUsername(String username){
+    public User handleFindUserByUsername(String username) {
         return this.userRepository.findByEmail(username);
     }
 
-    public boolean isEmailExist(String email){
+    public boolean isEmailExist(String email) {
         return this.userRepository.existsByEmail(email);
     }
 
-    public boolean isIdExist(Long id){
+    public boolean isIdExist(Long id) {
         return this.userRepository.existsById(id);
     }
 
-    public ResUserDTO convertToResUserDTO(User user){
+    public ResUserDTO convertToResUserDTO(User user) {
         ResUserDTO res = new ResUserDTO();
         res.setId(user.getId());
         res.setEmail(user.getEmail());
@@ -88,14 +89,17 @@ public class UserService {
         res.setRole(user.getRole());
         return res;
     }
-    public void updateUserToken(String refreshToken, String email)
-    {
+
+    public void updateUserToken(String refreshToken, String email) {
         User user = this.userRepository.findByEmail(email);
-        if(user!= null){
+        if (user != null) {
             user.setRefreshToken(refreshToken);
             this.userRepository.save(user);
         }
     }
 
+    public int handleFetchQuantity() {
+        return (int) this.userRepository.count();
+    }
 
 }

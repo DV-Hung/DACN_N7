@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -34,7 +36,7 @@ public class HotelController {
 
     @GetMapping("/hotels/{id}")
     @ApiMessage("fetch a hotel by id")
-    public ResponseEntity<Hotel> getHotelById(@PathVariable Long id) throws IdInvalidException {
+    public ResponseEntity<Hotel> getHotelById(@PathVariable("id") Long id) throws IdInvalidException {
         boolean isValidId = this.hotelService.isIdExist(id);
         if (!isValidId) {
             throw new IdInvalidException("Hotel is not exist");
@@ -66,7 +68,7 @@ public class HotelController {
     @DeleteMapping("/hotels/{id}")
     @ApiMessage("delete hotel")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Hotel> deleteHotel(@PathVariable Long id) throws IdInvalidException {
+    public ResponseEntity<Hotel> deleteHotel(@PathVariable("id") Long id) throws IdInvalidException {
         boolean isValidId = this.hotelService.isIdExist(id);
         if (!isValidId) {
             throw new IdInvalidException("Hotel is not exist");
@@ -74,6 +76,5 @@ public class HotelController {
         this.hotelService.handleDeleteHotel(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }
+
 }
-
-

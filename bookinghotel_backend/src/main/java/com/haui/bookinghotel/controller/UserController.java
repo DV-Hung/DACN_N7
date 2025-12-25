@@ -1,6 +1,5 @@
 package com.haui.bookinghotel.controller;
 
-
 import com.haui.bookinghotel.domain.User;
 import com.haui.bookinghotel.domain.response.ResultPaginationDTO;
 import com.haui.bookinghotel.service.UserService;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+
     public UserController(UserService userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
@@ -35,22 +35,21 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ResultPaginationDTO> getAllUsers(
             @Filter Specification<User> spec,
-            Pageable pageable)
-    {
+            Pageable pageable) {
         ResultPaginationDTO users = this.userService.handleFetchAllUsers(spec, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 
     @GetMapping("/users/{id}")
     @ApiMessage("fetch a user by id")
-    public ResponseEntity<User> getUserById(@PathVariable Long id){
-        User user=  this.userService.handleFetchUserById(id);
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        User user = this.userService.handleFetchUserById(id);
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
     @PostMapping("/users")
     @ApiMessage("create a user")
-    public ResponseEntity<User> createNewUser( @Valid @RequestBody User user){
+    public ResponseEntity<User> createNewUser(@Valid @RequestBody User user) {
         String hashPassword = this.passwordEncoder.encode(user.getPassword());
         user.setPassword(hashPassword);
         User newUser = this.userService.handleCreateUser(user);
@@ -59,15 +58,22 @@ public class UserController {
 
     @PutMapping("/users")
     @ApiMessage("update user")
-    public ResponseEntity<User> updateUser( @RequestBody User user){
+    public ResponseEntity<User> updateUser(@RequestBody User user) {
         User newUser = this.userService.handleUpdateUser(user);
         return ResponseEntity.status(HttpStatus.OK).body(newUser);
     }
+
     @DeleteMapping("/users/{id}")
     @ApiMessage("delete user")
-    public ResponseEntity<User> deleteUser(@PathVariable Long id){
+    public ResponseEntity<User> deleteUser(@PathVariable Long id) {
         this.userService.handleDeleteUser(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+    }
+
+    @GetMapping("/users/count")
+    public ResponseEntity<Integer> fetchQuantity() {
+        int quantity = this.userService.handleFetchQuantity();
+        return ResponseEntity.status(HttpStatus.OK).body(quantity);
     }
 
 }

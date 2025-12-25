@@ -10,7 +10,7 @@ import lombok.Setter;
 import java.util.List;
 
 @Entity
-@Table(name ="rooms")
+@Table(name = "rooms")
 @Getter
 @Setter
 public class Room {
@@ -21,15 +21,14 @@ public class Room {
     private RoomType roomType;
     private String roomImage;
     private int capacity;
-    private int area;
-    @Column(columnDefinition = "MEDIUMTEXT")
-    private String utilities;
     private double price;
     @Enumerated(EnumType.STRING)
     private RoomStatus available;
+    private boolean is_active;
 
     @ManyToOne
-    @JoinColumn(name ="hotel_id")
+    @JoinColumn(name = "hotel_id")
+    @JsonIgnore
     private Hotel hotel;
 
     @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)

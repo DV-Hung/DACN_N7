@@ -1,0 +1,104 @@
+
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background: linear-gradient(135deg, #6e8efb, #a777e3);
+}
+
+.main-title {
+    font-size: 36px;
+    color: #ffffff;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.login-container {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 320px;
+    backdrop-filter: blur(5px);
+}
+
+.login-container h1 {
+    font-size: 28px;
+    color: #2c3e50;
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+.login-container input {
+    width: 100%;
+    padding: 12px;
+    margin: 12px 0;
+    border: 2px solid #ecf0f1;
+    border-radius: 25px;
+    box-sizing: border-box;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.login-container input:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+.login-container .password-container {
+    position: relative;
+}
+
+.login-container .toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: #3498db;
+}
+
+.login-container button[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: transform 0.2s, background 0.3s;
+}
+
+.login-container button[type="submit"]:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(45deg, #2980b9, #3498db);
+}
+
+.login-container .options {
+    margin-top: 15px;
+    font-size: 13px;
+    color: #7f8c8d;
+}
+
+.login-container .options a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.login-container .options a:hover {
+    text-decoration: underline;
+}

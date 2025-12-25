@@ -39,7 +39,7 @@ public class RoomController {
 
     @GetMapping("/rooms/{id}")
     @ApiMessage("fetch a room by id")
-    public ResponseEntity<Room> getRoomById(@PathVariable Long id) {
+    public ResponseEntity<Room> getRoomById(@PathVariable("id") Long id) {
         Room room = this.roomService.handleFetchRoomById(id);
         return ResponseEntity.status(HttpStatus.OK).body(room);
     }
@@ -49,7 +49,7 @@ public class RoomController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Room> createNewRoom(@Valid @RequestBody RoomRequest reqRoom) throws IdInvalidException {
         Hotel hotel = this.hotelService.handleFetchHotelById(reqRoom.getHotel_id());
-        if(hotel == null){
+        if (hotel == null) {
             throw new IdInvalidException("Hotel is not exist");
         }
         Room newRoom = this.roomService.handleCreateRoom(reqRoom, hotel);
@@ -59,19 +59,23 @@ public class RoomController {
     @PutMapping("/rooms")
     @ApiMessage("update room")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Room> updateRoom(@RequestBody Room room) throws IdInvalidException {
+    public ResponseEntity<Room> updateRoom(@RequestBody RoomRequest room) throws IdInvalidException {
         boolean isValidId = this.roomService.isIdExist(room.getId());
         if (!isValidId) {
+            throw new IdInvalidException("Room is not exist");
+        }
+        Hotel hotel = this.hotelService.handleFetchHotelById(room.getHotel_id());
+        if (hotel == null) {
             throw new IdInvalidException("Hotel is not exist");
         }
-        Room newRoom = this.roomService.handleUpdateRoom(room);
+        Room newRoom = this.roomService.handleUpdateRoom(room, hotel);
         return ResponseEntity.status(HttpStatus.OK).body(newRoom);
     }
 
     @DeleteMapping("/rooms/{id}")
     @ApiMessage("delete room")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Room> deleteRoom(@PathVariable Long id) throws IdInvalidException {
+    public ResponseEntity<Room> deleteRoom(@PathVariable("id") Long id) throws IdInvalidException {
         boolean isValidId = this.roomService.isIdExist(id);
         if (!isValidId) {
             throw new IdInvalidException("Hotel is not exist");
@@ -79,6 +83,20 @@ public class RoomController {
         this.roomService.handleDeleteRoom(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }
+
+    @GetMapping("/rooms/count")
+    public ResponseEntity<Integer> fetchQuantity() {
+        int quantity = this.roomService.handleFetchQuantity();
+        return ResponseEntity.status(HttpStatus.OK).body(quantity);
+    }
+
+    @GetMapping("/rooms/hotels/{hotelId}")
+    @ApiMessage("fetch rooms by hotel id")
+    public ResponseEntity<ResultPaginationDTO> getRoomsByHotelId(
+            @PathVariable("hotelId") Long hotelId,
+            @Filter Specification<Room> spec,
+            Pageable pageable) {
+        ResultPaginationDTO rooms = this.roomService.handleFetchRoomsByHotelId(hotelId, spec, pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(rooms);
+    }
 }
-
-
